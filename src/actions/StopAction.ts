@@ -3,60 +3,21 @@ import * as path from 'path';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
+import { loadPlatformConfig, parseType } from '../functions';
+
 interface IProps {
   name: string;
   type: string;
 }
 
 export const StopAction: IAction<IProps> = ({ name, type }) => {
-  const platformConfig = {
-    apps: {
-      admin: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-app-admin.git'
-      },
-      web: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-app-web.git'
-      }
-    },
-    gateways: {
-      admin: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-gateway-admin.git'
-      },
-      static: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-gateway-static.git'
-      },
-      web: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-gateway-web.git'
-      }
-    },
-    services: {
-      image: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-service-image.git'
-      },
-      message: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-service-message.git'
-      },
-      platform: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-service-platform.git'
-      },
-      recipe: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-service-recipe.git'
-      },
-      user: {
-        host: 'bitbucket.org',
-        repo: 'austincodeshop/vff-service-user.git'
-      }
-    }
-  };
+  const typeParsed = parseType(type);
+  if (typeParsed.singular !== 'platform') {
+    return;
+  }
+
+  // load platform config
+  const platformConfig = loadPlatformConfig(name);
 
   ['apps', 'gateways', 'services'].forEach((type: 'apps' | 'gateways' | 'services') => {
     if (!platformConfig[type]) {

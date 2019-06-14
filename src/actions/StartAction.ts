@@ -4,28 +4,24 @@ import { spawn } from 'child_process';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
+import { loadConfig, loadPlatformConfig, parseType } from '../functions';
+
 interface IProps {
   name: string;
   type: string;
 }
 
 export const StartAction: IAction<IProps> = ({ name, type }) => {
-  // get config file
-  const platformConfigFile = path.join(homedir(), `.mvs/platforms/${name}.json`);
+  const typeParsed = parseType(type);
+  if (typeParsed.singular !== 'platform') {
+    return;
+  }
 
   // load config
-  const platformConfig = (() => {
-    try {
-      return JSON.parse(fs.readFileSync(platformConfigFile, 'utf8'));
-    } catch {
-      return {};
-    }
-  })();
+  const config = loadConfig();
 
-  // validate config
-  if (typeof platformConfig !== 'object') {
-    throw new Error(`Config file is corrupt, should be object: ${platformConfigFile}`);
-  }
+  // load platform config
+  const platformConfig = loadPlatformConfig(name);
 
   ['apps', 'gateways', 'services'].forEach((type: 'apps' | 'gateways' | 'services') => {
     if (!platformConfig[type]) {
@@ -65,7 +61,7 @@ export const StartAction: IAction<IProps> = ({ name, type }) => {
         'npm',
         ['run', 'start:dev'],
         {
-          cwd: path.join(homedir(), 'Developer', name, repoName),
+          cwd: path.join(config.settings.defaultWorkspaceDir, name, repoName),
           detached: true,
           env: {
             ...process.env,

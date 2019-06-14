@@ -6,6 +6,7 @@ import {
   AddAction,
   CloneAction,
   GetAction,
+  InitAction,
   ListAction,
   RemoveAction,
   RunAction,
@@ -61,6 +62,20 @@ export const MvsProgram: IProgram = ({ args }) => {
             name: 'name',
             enum: ['defaultWorkspaceDir'],
             type: 'string'
+          }
+        ]
+      },
+      init: {
+        action: () => InitAction({ type: args[0], name: args[1] }),
+        args: [
+          {
+            name: 'type',
+            enum: ['app', 'gateway', 'platform', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: true
           }
         ]
       },

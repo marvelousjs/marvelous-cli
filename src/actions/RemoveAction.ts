@@ -1,7 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
+import { loadConfig, saveConfig } from '../functions';
 
 interface IProps {
   name: string;
@@ -9,32 +7,15 @@ interface IProps {
 }
 
 export const RemoveAction: IAction<IProps> = ({ name, type }) => {
-  if (!type) {
-    throw new Error('<type> is required.');
-  }
-
-  if (!name) {
-    throw new Error('<name> is required.');
-  }
-
   // get config file
-  const configFile = path.join(homedir(), '.mvs/config.json');
+  const config = loadConfig();
 
-  // load config
-  const config = (() => {
-    try {
-      return JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch {
-      return {};
+  if (type === 'platform') {
+    if (!config.platforms || !config.platforms[name]) {
+      throw new Error(`Platform does not exist: ${name}`);
     }
-  })();
-
-  // validate config
-  if (typeof config !== 'object') {
-    throw new Error(`Config file is corrupt, should be object: ${configFile}`);
+    delete config.platforms[name];
   }
 
-  delete config.platforms[name];
-
-  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+  saveConfig(config);
 };
