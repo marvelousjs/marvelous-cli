@@ -1,29 +1,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { homedir } from 'os';
+import { IAction } from '@marvelousjs/program';
 
-export const addAction = () => {
-  const type = process.argv[3];
-  const name = process.argv[4];
-  const url = process.argv[5];
+import { IConfig } from '../interfaces';
 
-  if (!type) {
-    throw new Error('<type> is required.');
-  }
+interface IProps {
+  name: string;
+  value: string;
+}
 
-  if (!name) {
-    throw new Error('<name> is required.');
-  }
-
-  if (!url) {
-    throw new Error('<url> is required.');
+export const SetAction: IAction<IProps> = ({ name, value }) => {
+  if (!value) {
+    throw new Error('<value> is required.');
   }
 
   // get config file
   const configFile = path.join(homedir(), '.mvs/config.json');
 
   // load config
-  const config = (() => {
+  const config: IConfig = (() => {
     try {
       return JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch {
@@ -36,11 +32,10 @@ export const addAction = () => {
     throw new Error(`Config file is corrupt, should be object: ${configFile}`);
   }
 
-  config.platforms = {
-    [name]: {
-      url
-    }
-  };
+  if (!config.settings) {
+    config.settings = {};
+  }
+  (config.settings as any)[name] = value;
 
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
 };

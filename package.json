@@ -10,8 +10,7 @@
     "typescript": "^3.5.1"
   },
   "scripts": {
-    "build": "tsc",
-    "postinstall": "npm link @marvelousjs/service-daemon"
+    "build": "tsc"
   },
   "dependencies": {
     "chalk": "^2.4.2"

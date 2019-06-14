@@ -2,12 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import { homedir } from 'os';
+import { IAction } from '@marvelousjs/program';
 
-export const upAction = () => {
-  const platform = 'vff';
+interface IProps {
+  name: string;
+  type: string;
+}
 
+export const StartAction: IAction<IProps> = ({ name, type }) => {
   // get config file
-  const platformConfigFile = path.join(homedir(), `.mvs/platforms/${platform}.json`);
+  const platformConfigFile = path.join(homedir(), `.mvs/platforms/${name}.json`);
 
   // load config
   const platformConfig = (() => {
@@ -28,15 +32,15 @@ export const upAction = () => {
       return;
     }
 
-    Object.keys(platformConfig[type]).forEach((name) => {
+    Object.keys(platformConfig[type]).forEach((objectName) => {
       const singularType = type.substr(0, type.length - 1);
-      const repoName = `${platform}-${singularType}-${name}`;
+      const repoName = `${name}-${singularType}-${objectName}`;
 
       console.log(`Starting ${repoName}...`);
 
       // get files
-      const logFile = path.join(homedir(), `.mvs/logs/${platform}-${singularType}-${name}.log`);
-      const pidFile = path.join(homedir(), `.mvs/daemons/${platform}-${singularType}-${name}.pid`);
+      const logFile = path.join(homedir(), `.mvs/logs/${repoName}.log`);
+      const pidFile = path.join(homedir(), `.mvs/daemons/${repoName}.pid`);
   
       // get/create log dir
       const logDir = path.dirname(logFile);
@@ -50,10 +54,10 @@ export const upAction = () => {
         fs.mkdirSync(pidDir, { recursive: true });
       }
   
-      // kill any existing marvelous-service-daemon processes
+      // process has already started
       if (fs.existsSync(pidFile)) {
         const currentPid = Number(fs.readFileSync(pidFile));
-        throw new Error(`${platform}-${singularType}-${name} has already been started (pid: ${currentPid})`);
+        throw new Error(`${repoName} has already been started (pid: ${currentPid})`);
       }
   
       // create new daemon process
@@ -61,7 +65,7 @@ export const upAction = () => {
         'npm',
         ['run', 'start:dev'],
         {
-          cwd: path.join(homedir(), 'Developer', platform, `${platform}-${singularType}-${name}`),
+          cwd: path.join(homedir(), 'Developer', name, repoName),
           detached: true,
           env: {
             ...process.env,

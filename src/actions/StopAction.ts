@@ -1,10 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { homedir } from 'os';
+import { IAction } from '@marvelousjs/program';
 
-export const downAction = () => {
-  const platform = 'vff';
+interface IProps {
+  name: string;
+  type: string;
+}
 
+export const StopAction: IAction<IProps> = ({ name, type }) => {
   const platformConfig = {
     apps: {
       admin: {
@@ -59,13 +63,16 @@ export const downAction = () => {
       return;
     }
 
-    Object.keys(platformConfig[type]).forEach((name) => {
+    Object.keys(platformConfig[type]).forEach((objectName) => {
       const singularType = type.substr(0, type.length - 1);
+      const repoName = `${name}-${singularType}-${objectName}`;
+
+      console.log(`Stopping ${repoName}...`);
 
       // get files
-      const pidFile = path.join(homedir(), `.mvs/daemons/${platform}-${singularType}-${name}.pid`);
+      const pidFile = path.join(homedir(), `.mvs/daemons/${name}-${singularType}-${objectName}.pid`);
   
-      // kill any existing marvelous-service-daemon processes
+      // kill any existing processes
       if (fs.existsSync(pidFile)) {
         const currentPid = Number(fs.readFileSync(pidFile));
     

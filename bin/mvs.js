@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/mvs');
+require('../dist/main');

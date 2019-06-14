@@ -1,19 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { homedir } from 'os';
+import { IAction } from '@marvelousjs/program';
 
-export const removeAction = () => {
-  const type = process.argv[3];
-  const name = process.argv[4];
-
-  if (!type) {
-    throw new Error('<type> is required.');
-  }
-
-  if (!name) {
-    throw new Error('<name> is required.');
-  }
-
+export const ListAction: IAction = () => {
   // get config file
   const configFile = path.join(homedir(), '.mvs/config.json');
 
@@ -31,7 +21,8 @@ export const removeAction = () => {
     throw new Error(`Config file is corrupt, should be object: ${configFile}`);
   }
 
-  delete config.platforms[name];
-
-  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+  console.log('Platforms:');
+  Object.keys(config.platforms || {}).forEach(platform => {
+    console.log(`- ${platform}`);
+  });
 };
