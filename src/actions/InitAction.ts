@@ -43,7 +43,6 @@ const npmInstall = (cwd: string) => {
 }
 
 const npmBuild = (cwd: string) => {
-  console.log(cwd);
   return new Promise((resolve) => {
     // create new daemon process
     const child = spawn(
