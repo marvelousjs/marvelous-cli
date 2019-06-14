@@ -1,0 +1,19 @@
+{
+  "name": "@marvelousjs/cli",
+  "version": "0.1.0",
+  "description": "the marvelous cli",
+  "bin": {
+    "mvs": "./bin/mvs.js"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.8",
+    "typescript": "^3.5.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "postinstall": "npm link @marvelousjs/service-daemon"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2"
+  }
+}
