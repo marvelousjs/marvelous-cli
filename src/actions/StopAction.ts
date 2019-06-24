@@ -3,21 +3,25 @@ import * as path from 'path';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadPlatformConfig, parseType } from '../functions';
+import { loadConfig, parseType } from '../functions';
 
 interface IProps {
-  name: string;
+  platformName: string;
+  name?: string;
   type: string;
 }
 
-export const StopAction: IAction<IProps> = ({ name, type }) => {
+export const StopAction: IAction<IProps> = ({ platformName, name = platformName, type }) => {
   const typeParsed = parseType(type);
-  if (typeParsed.singular !== 'platform') {
+  if (typeParsed.singular !== 'all') {
     return;
   }
 
+  // load config
+  const config = loadConfig();
+
   // load platform config
-  const platformConfig = loadPlatformConfig(name);
+  const platformConfig = config.platforms[platformName];
 
   ['apps', 'gateways', 'services'].forEach((type: 'apps' | 'gateways' | 'services') => {
     if (!platformConfig[type]) {

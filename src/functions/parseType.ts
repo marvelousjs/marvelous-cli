@@ -1,4 +1,11 @@
 export const parseType = (type: string) => {
+  if (type === 'all') {
+    return {
+      singular: 'all',
+      plural: 'all'
+    };
+  }
+
   if (type === 'a' || type === 'app' || type === 'apps') {
     return {
       singular: 'app',

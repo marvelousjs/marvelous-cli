@@ -8,6 +8,7 @@ import {
   GetAction,
   InitAction,
   ListAction,
+  LogsAction,
   RemoveAction,
   RunAction,
   SetAction,
@@ -18,6 +19,8 @@ import {
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
 export const MvsProgram: IProgram = ({ args }) => {
+  const platformName = process.argv[1].split('/').slice(-1)[0];
+
   return {
     name: 'mvs',
     version: pkg.version,
@@ -32,9 +35,10 @@ export const MvsProgram: IProgram = ({ args }) => {
     actions: {
       add: {
         action: () => AddAction({
+          platformName,
           type: args[0],
           name: args[1],
-          url: args[2]
+          dir: args[2]
         }),
         args: [
           {
@@ -47,7 +51,7 @@ export const MvsProgram: IProgram = ({ args }) => {
             required: true
           },
           {
-            name: 'url',
+            name: 'dir',
             required: true
           }
         ]
@@ -66,7 +70,11 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       init: {
-        action: () => InitAction({ type: args[0], name: args[1] }),
+        action: () => InitAction({
+          platformName,
+          type: args[0],
+          name: args[1]
+        }),
         args: [
           {
             name: 'type',
@@ -80,10 +88,38 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       list: {
-        action: ListAction
+        action: () => ListAction({
+          platformName,
+          type: args[0]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'apps', 'gateways', 'platforms', 'services'],
+            required: true
+          }
+        ]
+      },
+      logs: {
+        action: () => LogsAction({
+          type: args[0],
+          name: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['app', 'gateway', 'platform', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: true
+          }
+        ]
       },
       remove: {
         action: () => RemoveAction({
+          platformName,
           type: args[0],
           name: args[1]
         }),
@@ -117,30 +153,34 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       start: {
-        action: () => StartAction({ type: args[0], name: args[1] }),
+        action: () => StartAction({
+          platformName,
+          type: args[0],
+          name: args[1]
+        }),
         args: [
           {
             name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
+            enum: ['all', 'app', 'gateway', 'platform', 'service'],
             required: true
           },
           {
             name: 'name',
-            required: true
+            required: false
           }
         ]
       },
       stop: {
-        action: () => StopAction({ type: args[0], name: args[1] }),
+        action: () => StopAction({ platformName, type: args[0], name: args[1] }),
         args: [
           {
             name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
+            enum: ['all', 'app', 'gateway', 'platform', 'service'],
             required: true
           },
           {
             name: 'name',
-            required: true
+            required: false
           }
         ]
       }

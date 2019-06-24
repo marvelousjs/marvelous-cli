@@ -3,6 +3,7 @@ export * from './CloneAction';
 export * from './GetAction';
 export * from './InitAction';
 export * from './ListAction';
+export * from './LogsAction';
 export * from './RemoveAction';
 export * from './RunAction';
 export * from './SetAction';

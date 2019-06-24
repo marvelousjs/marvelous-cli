@@ -4,16 +4,21 @@ import { spawn } from 'child_process';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, loadPlatformConfig, parseType } from '../functions';
+import { loadConfig, parseType } from '../functions';
 
 interface IProps {
-  name: string;
+  platformName: string;
+  name?: string;
   type: string;
 }
 
-export const StartAction: IAction<IProps> = ({ name, type }) => {
+export const StartAction: IAction<IProps> = ({
+  platformName,
+  name = platformName,
+  type
+}) => {
   const typeParsed = parseType(type);
-  if (typeParsed.singular !== 'platform') {
+  if (typeParsed.singular !== 'all') {
     return;
   }
 
@@ -21,7 +26,7 @@ export const StartAction: IAction<IProps> = ({ name, type }) => {
   const config = loadConfig();
 
   // load platform config
-  const platformConfig = loadPlatformConfig(name);
+  const platformConfig = config.platforms[platformName];
 
   ['apps', 'gateways', 'services'].forEach((type: 'apps' | 'gateways' | 'services') => {
     if (!platformConfig[type]) {
@@ -61,7 +66,7 @@ export const StartAction: IAction<IProps> = ({ name, type }) => {
         'npm',
         ['run', 'start:dev'],
         {
-          cwd: path.join(config.settings.defaultWorkspaceDir, name, repoName),
+          cwd: path.join(platformConfig[type][objectName].dir),
           detached: true,
           env: {
             ...process.env,
