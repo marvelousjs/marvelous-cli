@@ -4,22 +4,44 @@ import { IProgram } from '@marvelousjs/program';
 
 import {
   AddAction,
+  BuildAction,
   CloneAction,
   GetAction,
   InitAction,
+  InstallAction,
   ListAction,
   LogsAction,
+  PullAction,
   RemoveAction,
-  RunAction,
   SetAction,
   StartAction,
   StopAction
 } from '../actions';
+import chalk from 'chalk';
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
 export const MvsProgram: IProgram = ({ args }) => {
   const platformName = process.argv[1].split('/').slice(-1)[0];
+
+  let cliConfig = {};
+  Object.keys(require.cache).forEach((file) => {
+    if (file.match(platformName)) {
+      const dir = path.dirname(file);
+      if (/\/bin$/.test(dir)) {
+        const parentDir = path.dirname(dir);
+        const configFile = path.join(parentDir, '.mvs.json');
+        if (fs.existsSync(configFile)) {
+          const configFileContents = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+          cliConfig = configFileContents;
+        }
+      }
+    }
+  });
+
+  if (Object.entries(cliConfig).length === 0) {
+    console.log(chalk.yellow('WARNING: CLI config is empty.'));
+  }
 
   return {
     name: 'mvs',
@@ -56,8 +78,37 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      build: {
+        action: () => BuildAction({
+          platformName,
+          type: args[0]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'apps', 'gateways', 'services'],
+            required: true
+          }
+        ]
+      },
       clone: {
-        action: CloneAction
+        action: () => CloneAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
       },
       get: {
         action: () => GetAction({ name: args[0] }),
@@ -78,11 +129,24 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
+            enum: ['platform'],
             required: true
           },
           {
             name: 'name',
+            required: true
+          }
+        ]
+      },
+      install: {
+        action: () => InstallAction({
+          platformName,
+          type: args[0]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'apps', 'gateways', 'services'],
             required: true
           }
         ]
@@ -102,6 +166,7 @@ export const MvsProgram: IProgram = ({ args }) => {
       },
       logs: {
         action: () => LogsAction({
+          platformName,
           type: args[0],
           name: args[1]
         }),
@@ -113,6 +178,19 @@ export const MvsProgram: IProgram = ({ args }) => {
           },
           {
             name: 'name',
+            required: true
+          }
+        ]
+      },
+      pull: {
+        action: () => PullAction({
+          platformName,
+          type: args[0]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'apps', 'gateways', 'services'],
             required: true
           }
         ]
@@ -134,9 +212,6 @@ export const MvsProgram: IProgram = ({ args }) => {
             required: true
           }
         ]
-      },
-      run: {
-        action: RunAction
       },
       set: {
         action: () => SetAction({ name: args[0], value: args[1] }),

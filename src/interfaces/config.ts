@@ -1,8 +1,15 @@
 export interface IConfig {
-  platforms: {
+  daemons?: IConfigDaemon[];
+  platforms?: {
     [name: string]: IConfigPlatform;
   };
-  settings: IConfigSettings;
+  settings?: IConfigSettings;
+}
+
+export interface IConfigDaemon {
+  name: string;
+  pid: number;
+  port: number;
 }
 
 export interface IConfigPlatform {

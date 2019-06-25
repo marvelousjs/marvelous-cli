@@ -1,9 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, parseType } from '../functions';
+import { loadConfig, parseType, saveConfig } from '../functions';
 
 interface IProps {
   platformName: string;
@@ -34,19 +31,15 @@ export const StopAction: IAction<IProps> = ({ platformName, name = platformName,
 
       console.log(`Stopping ${repoName}...`);
 
-      // get files
-      const pidFile = path.join(homedir(), `.mvs/daemons/${name}-${singularType}-${objectName}.pid`);
-  
-      // kill any existing processes
-      if (fs.existsSync(pidFile)) {
-        const currentPid = Number(fs.readFileSync(pidFile));
-    
+      const currentDaemonIndex = config.daemons.findIndex(d => d.name === repoName);
+      if (currentDaemonIndex !== -1) {
         try {
-          process.kill(currentPid);
+          process.kill(config.daemons[currentDaemonIndex].pid);
         } catch {}
-    
-        fs.unlinkSync(pidFile);
+        config.daemons.splice(currentDaemonIndex, 1);
       }
     });
   });
+
+  saveConfig(config);
 };

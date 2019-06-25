@@ -5,6 +5,7 @@
   "bin": {
     "mvs": "./bin/mvs.js"
   },
+  "main": "dist/index.js",
   "dependencies": {
     "@marvelousjs/program": "^0.1.0",
     "async-foreach": "^0.1.3",

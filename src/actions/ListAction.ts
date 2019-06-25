@@ -15,7 +15,7 @@ export const ListAction: IAction<IProps> = ({
   // get config file
   const config = loadConfig();
 
-  if (!config.platforms && !config.platforms[platformName]) {
+  if (!config.platforms || !config.platforms[platformName]) {
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 

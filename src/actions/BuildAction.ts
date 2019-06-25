@@ -3,37 +3,31 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, parseType } from '../functions';
-import { homedir } from 'os';
+import { loadConfig, saveConfig } from '../functions';
 
 interface IProps {
   platformName: string;
   type: string;
-  name: string;
 }
 
-const tailLogs = (cwd: string) => {
+const npmBuild = (cwd: string) => {
   return new Promise((resolve) => {
     // create new daemon process
-    console.log(cwd);
     const child = spawn(
-      'tail',
-      ['-f', cwd],
+      'npm',
+      ['run', 'build:dev'],
       {
-        stdio: ['ignore', process.stdout, process.stdout]
+        cwd
       }
     );
-    child.on('message', (e) => {
-      console.log(e);
-    });
+    child.on('message', console.log);
     child.on('close', resolve);
   });
 }
 
-export const LogsAction: IAction<IProps> = async ({
+export const BuildAction: IAction<IProps> = async ({
   platformName,
-  type,
-  name
+  type
 }) => {
   // load config
   const config = loadConfig();
@@ -45,7 +39,6 @@ export const LogsAction: IAction<IProps> = async ({
   const platformConfig = config.platforms[platformName];
 
   console.log(type);
-  console.log(name);
 
   await forEach(['services', 'gateways', 'apps'], async (type: 'apps' | 'gateways' | 'services') => {
     if (!platformConfig[type]) {
@@ -53,12 +46,11 @@ export const LogsAction: IAction<IProps> = async ({
     }
 
     await forEach(Object.keys(platformConfig[type]), async (objectName) => {
-      // const artifact = platformConfig[type][objectName];
-      const typeParsed = parseType(type);
+      const artifact = platformConfig[type][objectName];
 
-      console.log(`Logs for ${objectName} ${type}...`);
+      console.log(`Building ${objectName} ${type}...`);
 
-      await tailLogs(path.join(homedir(), '.mvs/logs', `${platformName}-${typeParsed.singular}-${objectName}.log`));
+      await npmBuild(path.normalize(artifact.dir));
     });
   });
 

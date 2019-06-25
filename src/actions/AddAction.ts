@@ -19,13 +19,13 @@ export const AddAction: IAction<IProps> = ({
   // load config
   const config = loadConfig();
 
-  if (!config.platforms) {
-    config.platforms = {};
-  }
-
-  if (!config.platforms[platformName]) {
+  if (!config.platforms || !config.platforms[platformName]) {
     throw new Error(`Platform does not exist: ${platformName}`);
   }
+
+  const cleanDir = dir.substr(0, 1) === '/'
+    ? path.normalize(dir)
+    : path.join(process.cwd(), dir);
 
   if (type === 'app') {
     if (!config.platforms[platformName].apps) {
@@ -37,7 +37,7 @@ export const AddAction: IAction<IProps> = ({
     }
 
     config.platforms[platformName].apps[name] = {
-      dir: path.join(process.cwd(), dir)
+      dir: cleanDir
     };
   }
 
@@ -51,7 +51,7 @@ export const AddAction: IAction<IProps> = ({
     }
 
     config.platforms[platformName].gateways[name] = {
-      dir: path.join(process.cwd(), dir)
+      dir: cleanDir
     };
   }
 
@@ -65,7 +65,7 @@ export const AddAction: IAction<IProps> = ({
     }
 
     config.platforms[platformName].services[name] = {
-      dir: path.join(process.cwd(), dir)
+      dir: cleanDir
     };
   }
 
