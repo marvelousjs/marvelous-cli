@@ -1,16 +1,18 @@
-import chalk from 'chalk';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig } from '../functions';
+import { loadConfig, toArtifactArray, parseType } from '../functions';
+import { IArtifact } from '../interfaces';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  type: string;
+  typeFilter: string;
 }
 
 export const ListAction: IAction<IProps> = ({
+  cliConfig = {},
   platformName,
-  type
+  typeFilter
 }) => {
   // get config file
   const config = loadConfig();
@@ -19,43 +21,12 @@ export const ListAction: IAction<IProps> = ({
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 
-  if (type === 'all' || type === 'apps') {
-    console.log('Apps:');
-    if (!config.platforms[platformName].apps || Object.entries(config.platforms[platformName].apps).length === 0) {
-      console.log(chalk.gray('(none)'));
-    } else {
-      Object.entries(config.platforms[platformName].apps || {}).forEach(([appName, app]) => {
-        console.log(`- ${appName}: ${app.dir}`);
-      });
-    }
-  }
+  const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
-  if (type === 'all' || type === 'gateways') {
-    console.log('Gateways:');
-    if (!config.platforms[platformName].gateways || Object.entries(config.platforms[platformName].gateways).length === 0) {
-      console.log(chalk.gray('(none)'));
-    } else {
-      Object.entries(config.platforms[platformName].gateways || {}).forEach(([gatewayName, gateway]) => {
-        console.log(`- ${gatewayName}: ${gateway.dir}`);
-      });
-    }
-  }
+  console.log(`STATUS ${'NAME'.padEnd(16)} ${'TYPE'.padEnd(8)} DIRECTORY`);
+  console.log(`${'='.repeat(6)} ${'='.repeat(16)} ${'='.repeat(8)} ${'='.repeat(48)}`);
 
-  if (type === 'all' || type === 'services') {
-    console.log('Services:');
-    if (!config.platforms[platformName].services || Object.entries(config.platforms[platformName].services).length === 0) {
-      console.log(chalk.gray('(none)'));
-    } else {
-      Object.entries(config.platforms[platformName].services).forEach(([serviceName, service]) => {
-        console.log(`- ${serviceName}: ${service.dir}`);
-      });
-    }
-  }
-
-  if (type === 'platforms') {
-    console.log('Platforms:');
-    Object.keys(config.platforms || {}).forEach(platform => {
-      console.log(`- ${platform}`);
-    });
-  }
+  artifacts.forEach((artifact: IArtifact) => {
+    console.log(`${'on'.padEnd(6)} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ~/Developer/${platformName}/${artifact.repo.name}`);
+  });
 };

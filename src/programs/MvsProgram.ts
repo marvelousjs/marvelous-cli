@@ -3,17 +3,12 @@ import * as path from 'path';
 import { IProgram } from '@marvelousjs/program';
 
 import {
-  AddAction,
   BuildAction,
   CloneAction,
-  GetAction,
-  InitAction,
   InstallAction,
   ListAction,
   LogsAction,
   PullAction,
-  RemoveAction,
-  SetAction,
   StartAction,
   StopAction
 } from '../actions';
@@ -55,29 +50,6 @@ export const MvsProgram: IProgram = ({ args }) => {
       f: 'force'
     },
     actions: {
-      add: {
-        action: () => AddAction({
-          platformName,
-          type: args[0],
-          name: args[1],
-          dir: args[2]
-        }),
-        args: [
-          {
-            name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
-            required: true
-          },
-          {
-            name: 'name',
-            required: true
-          },
-          {
-            name: 'dir',
-            required: true
-          }
-        ]
-      },
       build: {
         action: () => BuildAction({
           platformName,
@@ -86,7 +58,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'apps', 'gateways', 'services'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           }
         ]
@@ -110,34 +82,6 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
-      get: {
-        action: () => GetAction({ name: args[0] }),
-        args: [
-          {
-            name: 'name',
-            enum: ['defaultWorkspaceDir'],
-            type: 'string'
-          }
-        ]
-      },
-      init: {
-        action: () => InitAction({
-          platformName,
-          type: args[0],
-          name: args[1]
-        }),
-        args: [
-          {
-            name: 'type',
-            enum: ['platform'],
-            required: true
-          },
-          {
-            name: 'name',
-            required: true
-          }
-        ]
-      },
       install: {
         action: () => InstallAction({
           platformName,
@@ -146,20 +90,21 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'apps', 'gateways', 'services'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           }
         ]
       },
       list: {
         action: () => ListAction({
+          cliConfig,
           platformName,
-          type: args[0]
+          typeFilter: args[0]
         }),
         args: [
           {
             name: 'type',
-            enum: ['all', 'apps', 'gateways', 'platforms', 'services'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           }
         ]
@@ -173,7 +118,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           },
           {
@@ -190,39 +135,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'apps', 'gateways', 'services'],
-            required: true
-          }
-        ]
-      },
-      remove: {
-        action: () => RemoveAction({
-          platformName,
-          type: args[0],
-          name: args[1]
-        }),
-        args: [
-          {
-            name: 'type',
-            enum: ['app', 'gateway', 'platform', 'service'],
-            required: true
-          },
-          {
-            name: 'name',
-            required: true
-          }
-        ]
-      },
-      set: {
-        action: () => SetAction({ name: args[0], value: args[1] }),
-        args: [
-          {
-            name: 'name',
-            enum: ['defaultWorkspaceDir'],
-            required: true
-          },
-          {
-            name: 'value',
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           }
         ]
@@ -236,7 +149,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'platform', 'service'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           },
           {
@@ -250,7 +163,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'platform', 'service'],
+            enum: ['all', 'app', 'gateway', 'service'],
             required: true
           },
           {

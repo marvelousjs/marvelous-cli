@@ -4,7 +4,7 @@ import * as forEach from 'p-map';
 import * as path from 'path';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig } from '../functions';
+import { loadConfig, saveConfig, toArtifactArray } from '../functions';
 import { homedir } from 'os';
 import chalk from 'chalk';
 
@@ -55,45 +55,11 @@ export const CloneAction: IAction<IProps> = async ({
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 
-  const apps = Object.entries(cliConfig.apps)
-    .map(([name, app]) => {
-      return [name, {
-        ...app,
-        type: 'app'
-      }];
-    });
-  
-  const gateways = Object.entries(cliConfig.gateways)
-    .map(([name, app]) => {
-      return [name, {
-        ...app,
-        type: 'gateway'
-      }];
-    });
+  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: typeFilter });
 
-  const services = Object.entries(cliConfig.services)
-    .map(([name, app]) => {
-      return [name, {
-        ...app,
-        type: 'service'
-      }];
-    });
-
-  const things = apps.concat(gateways).concat(services)
-    .filter(([name, thing]: [string, any]) => {
-      if (
-        (typeFilter === 'all' || typeFilter === thing.type)
-        &&
-        (nameFilter === '' || nameFilter === name)
-      ) {
-        return true;
-      }
-      return false;
-    });
-
-  await forEach(things, async ([name, thing]: any) => {
-    const from = `https://${thing.repo.host}${thing.repo.path}`;
-    const to = path.join(homedir(), 'Developer', platformName, thing.repo.name);
+  await forEach(artifacts, async (artifact) => {
+    const from = `https://${artifact.repo.host}${artifact.repo.path}`;
+    const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
     console.log(chalk.blue(`Cloning from '${from}'...`));
 
