@@ -52,8 +52,9 @@ export const MvsProgram: IProgram = ({ args }) => {
     actions: {
       build: {
         action: () => BuildAction({
+          cliConfig,
           platformName,
-          type: args[0]
+          typeFilter: args[0]
         }),
         args: [
           {
@@ -84,8 +85,9 @@ export const MvsProgram: IProgram = ({ args }) => {
       },
       install: {
         action: () => InstallAction({
+          cliConfig,
           platformName,
-          type: args[0]
+          typeFilter: args[0]
         }),
         args: [
           {
@@ -129,8 +131,9 @@ export const MvsProgram: IProgram = ({ args }) => {
       },
       pull: {
         action: () => PullAction({
+          cliConfig,
           platformName,
-          type: args[0]
+          typeFilter: args[0]
         }),
         args: [
           {

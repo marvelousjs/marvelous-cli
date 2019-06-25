@@ -1,13 +1,17 @@
+import chalk from 'chalk';
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import { homedir } from 'os';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig } from '../functions';
+import { loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  type: string;
+  typeFilter: string;
 }
 
 const gitPull = (cwd: string) => {
@@ -17,7 +21,8 @@ const gitPull = (cwd: string) => {
       'git',
       ['pull', 'origin', 'master'],
       {
-        cwd
+        cwd,
+        stdio: ['ignore', process.stdout, process.stdout]
       }
     );
     child.on('message', console.log);
@@ -26,37 +31,30 @@ const gitPull = (cwd: string) => {
 }
 
 export const PullAction: IAction<IProps> = async ({
+  cliConfig,
   platformName,
-  type
+  typeFilter
 }) => {
   // load config
   const config = loadConfig();
 
-  if (!config.platforms) {
-    config.platforms = {};
-  }
-
-  if (!config.platforms[platformName]) {
+  if (!config.platforms || !config.platforms[platformName]) {
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 
-  const platformConfig = config.platforms[platformName];
+  const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
-  console.log(type);
+  await forEach(artifacts, async artifact => {
+    const pullDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-  await forEach(['services', 'gateways', 'apps'], async (type: 'apps' | 'gateways' | 'services') => {
-    if (!platformConfig[type]) {
-      return;
+    console.log(chalk.blue(`Pulling '${pullDir}'...`));
+
+    if (!fs.existsSync(pullDir)) {
+      throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);
     }
 
-    await forEach(Object.keys(platformConfig[type]), async (objectName) => {
-      const artifact = platformConfig[type][objectName];
-
-      console.log(`Pulling ${objectName} ${type} (${artifact.dir})...`);
-
-      await gitPull(path.normalize(artifact.dir));
-    });
-  });
+    await gitPull(pullDir);
+  }, { concurrency: 1 });
 
   saveConfig(config);
 };

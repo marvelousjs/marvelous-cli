@@ -1,3 +1,6 @@
+import chalk from 'chalk';
+import * as fs from 'fs';
+import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
 import { loadConfig, toArtifactArray, parseType } from '../functions';
@@ -23,10 +26,15 @@ export const ListAction: IAction<IProps> = ({
 
   const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
-  console.log(`STATUS ${'NAME'.padEnd(16)} ${'TYPE'.padEnd(8)} DIRECTORY`);
-  console.log(`${'='.repeat(6)} ${'='.repeat(16)} ${'='.repeat(8)} ${'='.repeat(48)}`);
+  console.log(`    ${'NAME'.padEnd(16)} ${'TYPE'.padEnd(8)} DIRECTORY`);
+  console.log(`${'='.repeat(3)} ${'='.repeat(16)} ${'='.repeat(8)} ${'='.repeat(64)}`);
 
   artifacts.forEach((artifact: IArtifact) => {
-    console.log(`${'on'.padEnd(6)} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ~/Developer/${platformName}/${artifact.repo.name}`);
+    const dir = `${homedir()}/Developer/${platformName}/${artifact.repo.name}`;
+    let dirOutput = chalk.gray('(none)');
+    if (fs.existsSync(dir)) {
+      dirOutput = dir;
+    }
+    console.log(`${chalk.green('on'.padEnd(3))} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ${dirOutput}`);
   });
 };

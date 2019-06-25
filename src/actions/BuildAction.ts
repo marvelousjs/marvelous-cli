@@ -1,13 +1,17 @@
+import chalk from 'chalk';
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import { homedir } from 'os';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig } from '../functions';
+import { loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  type: string;
+  typeFilter: string;
 }
 
 const npmBuild = (cwd: string) => {
@@ -17,7 +21,8 @@ const npmBuild = (cwd: string) => {
       'npm',
       ['run', 'build:dev'],
       {
-        cwd
+        cwd,
+        stdio: ['ignore', process.stdout, process.stdout]
       }
     );
     child.on('message', console.log);
@@ -26,8 +31,9 @@ const npmBuild = (cwd: string) => {
 }
 
 export const BuildAction: IAction<IProps> = async ({
+  cliConfig,
   platformName,
-  type
+  typeFilter
 }) => {
   // load config
   const config = loadConfig();
@@ -36,23 +42,19 @@ export const BuildAction: IAction<IProps> = async ({
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 
-  const platformConfig = config.platforms[platformName];
+  const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
-  console.log(type);
+  await forEach(artifacts, async artifact => {
+    const buildDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-  await forEach(['services', 'gateways', 'apps'], async (type: 'apps' | 'gateways' | 'services') => {
-    if (!platformConfig[type]) {
-      return;
+    console.log(chalk.bold(`Building ${buildDir}...`));
+
+    if (!fs.existsSync(buildDir)) {
+      throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);
     }
 
-    await forEach(Object.keys(platformConfig[type]), async (objectName) => {
-      const artifact = platformConfig[type][objectName];
-
-      console.log(`Building ${objectName} ${type}...`);
-
-      await npmBuild(path.normalize(artifact.dir));
-    });
-  });
+    await npmBuild(buildDir);
+  }, { concurrency: 1 });
 
   saveConfig(config);
 };

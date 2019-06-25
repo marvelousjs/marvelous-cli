@@ -1,13 +1,17 @@
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import { homedir } from 'os';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig } from '../functions';
+import { loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
+import chalk from 'chalk';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  type: string;
+  typeFilter: string;
 }
 
 const npmInstall = (cwd: string) => {
@@ -17,7 +21,8 @@ const npmInstall = (cwd: string) => {
       'npm',
       ['install'],
       {
-        cwd
+        cwd,
+        stdio: ['ignore', process.stdout, process.stdout]
       }
     );
     child.on('message', console.log);
@@ -26,37 +31,30 @@ const npmInstall = (cwd: string) => {
 }
 
 export const InstallAction: IAction<IProps> = async ({
+  cliConfig,
   platformName,
-  type
+  typeFilter
 }) => {
   // load config
   const config = loadConfig();
 
-  if (!config.platforms) {
-    config.platforms = {};
-  }
-
-  if (!config.platforms[platformName]) {
+  if (!config.platforms || !config.platforms[platformName]) {
     throw new Error(`Platform does not exist: ${platformName}`);
   }
 
-  const platformConfig = config.platforms[platformName];
+  const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
-  console.log(type);
+  await forEach(artifacts, async artifact => {
+    const installDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-  await forEach(['services', 'gateways', 'apps'], async (type: 'apps' | 'gateways' | 'services') => {
-    if (!platformConfig[type]) {
-      return;
+    console.log(chalk.bold(`Installing ${installDir}...`));
+
+    if (!fs.existsSync(installDir)) {
+      throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);
     }
 
-    await forEach(Object.keys(platformConfig[type]), async (objectName) => {
-      const artifact = platformConfig[type][objectName];
-
-      console.log(`Install ${objectName} ${type} (${artifact.dir})...`);
-
-      await npmInstall(path.normalize(artifact.dir));
-    });
-  });
+    await npmInstall(installDir);
+  }, { concurrency: 1 });
 
   saveConfig(config);
 };

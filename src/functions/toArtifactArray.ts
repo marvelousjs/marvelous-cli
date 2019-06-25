@@ -34,6 +34,6 @@ export const toArtifactArray: IToArtifactArray = (config, filter = {}) => {
     .filter(
       artifact =>
         (!filter.type || filter.type === 'all' || filter.type === artifact.type) &&
-        (!filter.name || filter.name === '' || filter.name === name)
+        (!filter.name || filter.name === '' || filter.name === artifact.name)
     ) as IArtifact[];
 };
