@@ -4,13 +4,17 @@ import { IProgram } from '@marvelousjs/program';
 
 import {
   BuildAction,
+  CheckoutAction,
   CloneAction,
   InstallAction,
   ListAction,
   LogsAction,
   PullAction,
   StartAction,
-  StopAction
+  StopAction,
+  CodeAction,
+  ResetAction,
+  DiffAction
 } from '../actions';
 import chalk from 'chalk';
 
@@ -64,8 +68,65 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      checkout: {
+        action: () => CheckoutAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       clone: {
         action: () => CloneAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      code: {
+        action: () => CodeAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      diff: {
+        action: () => DiffAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
@@ -141,6 +202,25 @@ export const MvsProgram: IProgram = ({ args }) => {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service'],
             required: true
+          }
+        ]
+      },
+      reset: {
+        action: () => ResetAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
           }
         ]
       },
