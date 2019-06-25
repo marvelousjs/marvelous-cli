@@ -47,21 +47,13 @@ export const CloneAction: IAction<IProps> = async ({
   // load config
   const config = loadConfig();
 
-  if (!config.platforms) {
-    config.platforms = {};
-  }
-
-  if (!config.platforms[platformName]) {
-    throw new Error(`Platform does not exist: ${platformName}`);
-  }
-
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: typeFilter });
 
   await forEach(artifacts, async (artifact) => {
     const from = `https://${artifact.repo.host}${artifact.repo.path}`;
     const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.blue(`Cloning from '${from}'...`));
+    console.log(chalk.bold(`Cloning from '${from}'...`));
 
     await gitClone(to, from);
 

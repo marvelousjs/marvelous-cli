@@ -113,9 +113,10 @@ export const MvsProgram: IProgram = ({ args }) => {
       },
       logs: {
         action: () => LogsAction({
+          cliConfig,
           platformName,
-          type: args[0],
-          name: args[1]
+          typeFilter: args[0],
+          nameFilter: args[1]
         }),
         args: [
           {
@@ -145,9 +146,10 @@ export const MvsProgram: IProgram = ({ args }) => {
       },
       start: {
         action: () => StartAction({
+          cliConfig,
           platformName,
-          type: args[0],
-          name: args[1]
+          typeFilter: args[0],
+          nameFilter: args[1]
         }),
         args: [
           {
@@ -162,7 +164,12 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       stop: {
-        action: () => StopAction({ platformName, type: args[0], name: args[1] }),
+        action: () => StopAction({
+          cliConfig,
+          // platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
         args: [
           {
             name: 'type',

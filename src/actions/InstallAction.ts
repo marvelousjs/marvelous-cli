@@ -38,10 +38,6 @@ export const InstallAction: IAction<IProps> = async ({
   // load config
   const config = loadConfig();
 
-  if (!config.platforms || !config.platforms[platformName]) {
-    throw new Error(`Platform does not exist: ${platformName}`);
-  }
-
   const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
   await forEach(artifacts, async artifact => {

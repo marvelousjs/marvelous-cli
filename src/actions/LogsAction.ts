@@ -1,21 +1,23 @@
+import chalk from 'chalk';
 import { spawn } from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, parseType } from '../functions';
+import { loadConfig, saveConfig, parseType, toArtifactArray } from '../functions';
 import { homedir } from 'os';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  type: string;
-  name: string;
+  typeFilter: string;
+  nameFilter: string;
 }
 
 const tailLogs = (cwd: string) => {
   return new Promise((resolve) => {
     // create new daemon process
-    console.log(cwd);
     const child = spawn(
       'tail',
       ['-f', cwd],
@@ -23,44 +25,33 @@ const tailLogs = (cwd: string) => {
         stdio: ['ignore', process.stdout, process.stdout]
       }
     );
-    child.on('message', (e) => {
-      console.log(e);
-    });
+    child.on('message', console.log);
     child.on('close', resolve);
   });
 }
 
 export const LogsAction: IAction<IProps> = async ({
+  cliConfig = {},
   platformName,
-  type,
-  name
+  typeFilter,
+  nameFilter
 }) => {
   // load config
   const config = loadConfig();
 
-  if (!config.platforms || !config.platforms[platformName]) {
-    throw new Error(`Platform does not exist: ${platformName}`);
-  }
+  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
 
-  const platformConfig = config.platforms[platformName];
+  await forEach(artifacts, async artifact => {
+    const logDir = path.join(homedir(), '.mvs/logs', platformName, `${artifact.repo.name}.log`);
 
-  console.log(type);
-  console.log(name);
+    console.log(chalk.bold(`Logs for '${logDir}'...`));
 
-  await forEach(['services', 'gateways', 'apps'], async (type: 'apps' | 'gateways' | 'services') => {
-    if (!platformConfig[type]) {
-      return;
+    if (!fs.existsSync(logDir)) {
+      throw new Error(`Logs do not exist for ${artifact.repo.name}.`);
     }
 
-    await forEach(Object.keys(platformConfig[type]), async (objectName) => {
-      // const artifact = platformConfig[type][objectName];
-      const typeParsed = parseType(type);
-
-      console.log(`Logs for ${objectName} ${type}...`);
-
-      await tailLogs(path.join(homedir(), '.mvs/logs', `${platformName}-${typeParsed.singular}-${objectName}.log`));
-    });
-  });
+    await tailLogs(logDir);
+  }, { concurrency: 1 });
 
   saveConfig(config);
 };

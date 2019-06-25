@@ -38,16 +38,12 @@ export const PullAction: IAction<IProps> = async ({
   // load config
   const config = loadConfig();
 
-  if (!config.platforms || !config.platforms[platformName]) {
-    throw new Error(`Platform does not exist: ${platformName}`);
-  }
-
   const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
 
   await forEach(artifacts, async artifact => {
     const pullDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.blue(`Pulling '${pullDir}'...`));
+    console.log(chalk.bold(`Pulling '${pullDir}'...`));
 
     if (!fs.existsSync(pullDir)) {
       throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);

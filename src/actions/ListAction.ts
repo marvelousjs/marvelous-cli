@@ -17,11 +17,11 @@ export const ListAction: IAction<IProps> = ({
   platformName,
   typeFilter
 }) => {
-  // get config file
+  // load config
   const config = loadConfig();
 
-  if (!config.platforms || !config.platforms[platformName]) {
-    throw new Error(`Platform does not exist: ${platformName}`);
+  if (!config.daemons) {
+    config.daemons = [];
   }
 
   const artifacts = toArtifactArray(cliConfig, { type: parseType(typeFilter).singular });
@@ -35,6 +35,10 @@ export const ListAction: IAction<IProps> = ({
     if (fs.existsSync(dir)) {
       dirOutput = dir;
     }
-    console.log(`${chalk.green('on'.padEnd(3))} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ${dirOutput}`);
+
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    const status = currentDaemon ? chalk.green('on ') : chalk.red('off');
+
+    console.log(`${status} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ${dirOutput}`);
   });
 };

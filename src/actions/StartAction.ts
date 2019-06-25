@@ -1,27 +1,25 @@
+import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, parseType, random, saveConfig } from '../functions';
+import { loadConfig, parseType, random, saveConfig, toArtifactArray } from '../functions';
 
 interface IProps {
+  cliConfig: any;
   platformName: string;
-  name?: string;
-  type: string;
+  typeFilter: string;
+  nameFilter: string;
 }
 
 export const StartAction: IAction<IProps> = ({
+  cliConfig,
   platformName,
-  name = platformName,
-  type
+  typeFilter,
+  nameFilter
 }) => {
-  const typeParsed = parseType(type);
-  if (typeParsed.singular !== 'all') {
-    return;
-  }
-
   // load config
   const config = loadConfig();
 
@@ -29,78 +27,78 @@ export const StartAction: IAction<IProps> = ({
     config.daemons = [];
   }
 
-  // load platform config
-  const platformConfig = config.platforms[platformName];
+  const artifacts = toArtifactArray(cliConfig, {
+    name: nameFilter,
+    type: parseType(typeFilter).singular
+  });
 
-  ['apps', 'gateways', 'services'].forEach((type: 'apps' | 'gateways' | 'services') => {
-    if (!platformConfig[type]) {
-      return;
+  artifacts.forEach(artifact => {
+    const artifactDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    if (!fs.existsSync(artifactDir)) {
+      throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);
+    }
+  });
+
+  artifacts.forEach(artifact => {
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    if (currentDaemon) {
+      throw new Error(
+        `${artifact.repo.name} has already been started on port ${currentDaemon.port} (pid: ${
+          currentDaemon.pid
+        })`
+      );
     }
 
-    Object.keys(platformConfig[type]).forEach((objectName) => {
-      const singularType = type.substr(0, type.length - 1);
-      const repoName = `${name}-${singularType}-${objectName}`;
-
-      const currentDaemon = config.daemons.find(d => d.name === repoName);
-      if (currentDaemon) {
-        throw new Error(`${repoName} has already been started on port ${currentDaemon.port} (pid: ${currentDaemon.pid})`);
+    const randomPort = (() => {
+      if (artifact.type === 'app') {
+        return random(3100, 3999);
       }
-
-      const randomPort = (() => {
-        if (singularType === 'app') {
-          return random(3100, 3999);
-        }
-        if (singularType === 'gateway') {
-          return random(3100, 3999);
-        }
-        if (singularType === 'service') {
-          return random(3100, 3999);
-        }
-      })();
-
-      console.log(`Starting ${repoName} on port ${randomPort}...`);
-
-      // get files
-      const logFile = path.join(homedir(), `.mvs/logs/${repoName}.log`);
-  
-      // get/create log dir
-      const logDir = path.dirname(logFile);
-      if (!fs.existsSync(logDir)) {
-        fs.mkdirSync(logDir, { recursive: true });
+      if (artifact.type === 'gateway') {
+        return random(3100, 3999);
       }
-
-      // create new daemon process
-      const child = spawn(
-        'npm',
-        ['run', 'start:dev'],
-        {
-          cwd: path.join(platformConfig[type][objectName].dir),
-          detached: true,
-          env: {
-            ...process.env,
-            NODE_ENV: 'development',
-            PROTOCOL: 'http',
-            HOST: 'localhost',
-            PORT: randomPort.toString()
-          },
-          stdio: ['ignore', fs.openSync(logFile, 'a'), fs.openSync(logFile, 'a')]
-        }
-      );
-  
-      try {
-        if (config.daemons.find(d => d.port === randomPort)) {
-          throw new Error(`Failed to generate random port. Please try again.`);
-        }
-
-        config.daemons.push({
-          name: repoName,
-          pid: child.pid,
-          port: randomPort
-        });
-      } finally {
-        child.unref();
+      if (artifact.type === 'service') {
+        return random(3100, 3999);
       }
+    })();
+
+    console.log(chalk.bold(`Starting ${artifact.name} ${artifact.type} on port ${randomPort}...`));
+
+    // get files
+    const logFile = path.join(homedir(), `.mvs/logs/${platformName}/${artifact.repo.name}.log`);
+
+    // get/create log dir
+    const logDir = path.dirname(logFile);
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+
+    // create new daemon process
+    const child = spawn('npm', ['run', 'start:dev'], {
+      cwd: path.join(homedir(), 'Developer', platformName, artifact.repo.name),
+      detached: true,
+      env: {
+        ...process.env,
+        NODE_ENV: 'development',
+        PROTOCOL: 'http',
+        HOST: 'localhost',
+        PORT: randomPort.toString()
+      },
+      stdio: ['ignore', fs.openSync(logFile, 'a'), fs.openSync(logFile, 'a')]
     });
+
+    try {
+      if (config.daemons.find(d => d.port === randomPort)) {
+        throw new Error(`Failed to generate random port. Please try again.`);
+      }
+
+      config.daemons.push({
+        name: artifact.repo.name,
+        pid: child.pid,
+        port: randomPort
+      });
+    } finally {
+      child.unref();
+    }
   });
 
   saveConfig(config);
