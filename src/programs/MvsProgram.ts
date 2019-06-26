@@ -28,7 +28,7 @@ import { OpenAction } from '../actions/OpenAction';
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
 export const MvsProgram: IProgram = ({ args }) => {
-  const platformName = process.argv[1].split('/').slice(-1)[0];
+  const platformName = process.argv[1].split('/').slice(-1)[0].split('-')[0];
 
   let cliConfig = {};
   Object.keys(require.cache).forEach((file) => {

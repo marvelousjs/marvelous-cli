@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { npmTest, loadConfig, saveConfig, toArtifactArray, parseType, formatPath } from '../functions';
+import { npmTest, loadConfig, saveConfig, toArtifactArray, parseType, formatPath, random } from '../functions';
 import chalk from 'chalk';
 
 interface IProps {
@@ -35,7 +35,20 @@ export const TestAction: IAction<IProps> = async ({
       return;
     }
 
-    await npmTest(testDir);
+    const randomPort = (() => {
+      if (artifact.type === 'app') {
+        return random(8100, 8999);
+      }
+      if (artifact.type === 'gateway') {
+        return random(4100, 4999);
+      }
+      if (artifact.type === 'service') {
+        return random(3100, 3999);
+      }
+    })();
+
+    await npmTest(testDir, artifact.repo.name, randomPort);
+
   }, { concurrency: 1 });
 
   saveConfig(config);
