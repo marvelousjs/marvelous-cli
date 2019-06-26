@@ -85,9 +85,7 @@ export const StartAction: IAction<IProps> = ({
       env: {
         ...process.env,
         NODE_ENV: 'development',
-        PROTOCOL: 'http',
-        HOST: 'localhost',
-        PORT: randomPort.toString()
+        [`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`]: `http://localhost:${randomPort}`
       },
       stdio: ['ignore', fs.openSync(logFile, 'a'), fs.openSync(logFile, 'a')]
     });
