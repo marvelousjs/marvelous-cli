@@ -36,7 +36,7 @@ export const LogsAction: IAction<IProps> = async ({
     }
 
     await tailLogs(logDir);
-  }, { concurrency: 1 });
+  });
 
   saveConfig(config);
 };

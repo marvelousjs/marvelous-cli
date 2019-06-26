@@ -46,15 +46,6 @@ export const StartAction: IAction<IProps> = ({
       return;
     }
 
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
-    if (currentDaemon) {
-      throw new Error(
-        `${artifact.repo.name} has already been started on port ${currentDaemon.port} (pid: ${
-          currentDaemon.pid
-        })`
-      );
-    }
-
     const randomPort = (() => {
       if (artifact.type === 'app') {
         return random(8100, 8999);
@@ -76,6 +67,17 @@ export const StartAction: IAction<IProps> = ({
     const logDir = path.dirname(logFile);
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });
+    }
+
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    if (currentDaemon) {
+      console.log(
+        chalk.yellow(
+          `${artifact.repo.name} has already been started on port ${currentDaemon.port} (pid: ${
+            currentDaemon.pid
+          })`
+        )
+      );
     }
 
     // create new daemon process
