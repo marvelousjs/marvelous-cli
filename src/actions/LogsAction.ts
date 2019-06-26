@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, parseType, tailLogs, toArtifactArray } from '../functions';
+import { loadConfig, saveConfig, parseType, tailLogs, toArtifactArray, formatPath } from '../functions';
 import { homedir } from 'os';
 
 interface IProps {
@@ -28,7 +28,7 @@ export const LogsAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const logDir = path.join(homedir(), '.mvs/logs', platformName, `${artifact.repo.name}.log`);
 
-    console.log(chalk.bold(`Logs for '${logDir}'...`));
+    console.log(chalk.bold(`Logs for '${formatPath(logDir)}'...`));
 
     if (!fs.existsSync(logDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

@@ -1,6 +1,7 @@
 import { IAction } from '@marvelousjs/program';
 
 import { loadConfig, parseType, saveConfig, toArtifactArray } from '../functions';
+import chalk from 'chalk';
 
 interface IProps {
   cliConfig: any;
@@ -30,7 +31,7 @@ export const StopAction: IAction<IProps> = ({
   artifacts.forEach(artifact => {
     const currentDaemonIndex = config.daemons.findIndex(d => d.name === artifact.repo.name);
     if (currentDaemonIndex !== -1) {
-      console.log(`Stopping ${artifact.name} ${artifact.type}...`);
+      console.log(chalk.bold(`Stopping ${artifact.name} ${artifact.type}...`));
 
       try {
         process.kill(config.daemons[currentDaemonIndex].pid);

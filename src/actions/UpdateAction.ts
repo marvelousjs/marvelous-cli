@@ -28,7 +28,7 @@ export const UpdateAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const updateDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Updating ${formatPath(updateDir)}...`));
+    console.log(chalk.bold(`Updating '${formatPath(updateDir)}'...`));
 
     if (!fs.existsSync(updateDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

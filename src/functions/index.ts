@@ -1,3 +1,4 @@
+export * from './cd';
 export * from './code';
 export * from './formatPath';
 export * from './gitCheckout';
@@ -13,6 +14,7 @@ export * from './npmInstall';
 export * from './npmLink';
 export * from './npmTest';
 export * from './npmUpdate';
+export * from './open';
 export * from './parseType';
 export * from './random';
 export * from './saveConfig';

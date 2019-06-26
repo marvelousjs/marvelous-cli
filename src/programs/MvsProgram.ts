@@ -22,6 +22,8 @@ import { InitAction } from '../actions/InitAction';
 import { LinkAction } from '../actions/LinkAction';
 import { StatusAction } from '../actions/StatusAction';
 import { TestAction } from '../actions/TestAction';
+import { CdAction } from '../actions/CdAction';
+import { OpenAction } from '../actions/OpenAction';
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
@@ -76,6 +78,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'name',
             required: false
+          }
+        ]
+      },
+      cd: {
+        description: `changes directory to a single app, gateway, service or tool`,
+        action: () => CdAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: true
           }
         ]
       },
@@ -251,6 +273,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'name',
             required: false
+          }
+        ]
+      },
+      open: {
+        description: `opens single app, gateway, service or tool in finder`,
+        action: () => OpenAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: true
           }
         ]
       },

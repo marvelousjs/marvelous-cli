@@ -29,7 +29,7 @@ export const InitAction: IAction<IProps> = async ({
     const from = `https://${artifact.repo.host}${artifact.repo.path}`;
     const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Initializing ${formatPath(to)}...`));
+    console.log(chalk.bold(`Initializing '${formatPath(to)}'...`));
 
     if (!fs.existsSync(to)) {
       await gitClone(to, from);

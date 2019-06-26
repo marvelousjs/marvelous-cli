@@ -28,7 +28,7 @@ export const TestAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const testDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Testing ${formatPath(testDir)}...`));
+    console.log(chalk.bold(`Testing '${formatPath(testDir)}'...`));
 
     if (!fs.existsSync(testDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

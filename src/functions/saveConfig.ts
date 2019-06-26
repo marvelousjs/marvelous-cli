@@ -5,7 +5,12 @@ import { IConfig } from '../interfaces';
 
 export const saveConfig = (config: IConfig) => {
   // get config file
-  const configFile = path.join(homedir(), '.mvs/config.json');
+  const mvsDir = path.join(homedir(), '.mvs');
+  const configFile = path.join(mvsDir, 'config.json');
+
+  if (!fs.existsSync(mvsDir)) {
+    fs.mkdirSync(mvsDir, { recursive: true });
+  }
 
   const sortedConfig: any = {};
   Object.keys(config)

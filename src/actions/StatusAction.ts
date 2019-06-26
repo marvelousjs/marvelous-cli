@@ -28,7 +28,7 @@ export const StatusAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const statusDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Git Status for ${formatPath(statusDir)}...`));
+    console.log(chalk.bold(`Git Status for '${formatPath(statusDir)}'...`));
 
     if (!fs.existsSync(statusDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

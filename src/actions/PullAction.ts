@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { gitPull, loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
+import { gitPull, loadConfig, saveConfig, toArtifactArray, parseType, formatPath } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -28,7 +28,7 @@ export const PullAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const pullDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Pulling '${pullDir}'...`));
+    console.log(chalk.bold(`Pulling '${formatPath(pullDir)}'...`));
 
     if (!fs.existsSync(pullDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

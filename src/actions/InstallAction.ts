@@ -28,7 +28,7 @@ export const InstallAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const installDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Installing ${formatPath(installDir)}...`));
+    console.log(chalk.bold(`Installing '${formatPath(installDir)}'...`));
 
     if (!fs.existsSync(installDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

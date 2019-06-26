@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { code, loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
+import { code, formatPath, loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -30,7 +30,7 @@ export const CodeAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const codeDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Coding ${codeDir}...`));
+    console.log(chalk.bold(`Coding '${formatPath(codeDir)}'...`));
 
     if (!fs.existsSync(codeDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

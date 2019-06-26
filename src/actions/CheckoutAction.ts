@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, gitCheckout, saveConfig, toArtifactArray, parseType } from '../functions';
+import { formatPath, loadConfig, gitCheckout, saveConfig, toArtifactArray, parseType } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -28,7 +28,7 @@ export const CheckoutAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const checkoutDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Checking out 'master' in '${checkoutDir}'...`));
+    console.log(chalk.bold(`Checking out 'master' in '${formatPath(checkoutDir)}'...`));
 
     if (!fs.existsSync(checkoutDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));

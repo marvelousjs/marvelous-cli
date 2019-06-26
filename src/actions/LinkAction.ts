@@ -28,7 +28,7 @@ export const LinkAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const linkDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Linking ${formatPath(linkDir)}...`));
+    console.log(chalk.bold(`Linking '${formatPath(linkDir)}'...`));
 
     if (!fs.existsSync(linkDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
