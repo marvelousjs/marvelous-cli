@@ -6,5 +6,5 @@ export interface IArtifact {
     path: string;
     type: string;
   }
-  type: 'app' | 'gateway' | 'service';
+  type: 'app' | 'gateway' | 'service' | 'tool';
 }

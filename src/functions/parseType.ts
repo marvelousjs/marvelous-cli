@@ -34,6 +34,13 @@ export const parseType = (type: string) => {
     };
   }
 
+  if (type === 't' || type === 'tool' || type === 'tools') {
+    return {
+      singular: 'tool',
+      plural: 'tools'
+    };
+  }
+
   return {
     singular: '',
     plural: ''

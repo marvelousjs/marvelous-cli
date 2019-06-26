@@ -22,6 +22,9 @@ export interface IConfigPlatform {
   services?: {
     [name: string]: IConfigPlatformEntity;
   };
+  tools?: {
+    [name: string]: IConfigPlatformEntity;
+  };
 }
 
 export interface IConfigPlatformEntity {

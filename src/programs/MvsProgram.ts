@@ -14,9 +14,14 @@ import {
   StopAction,
   CodeAction,
   ResetAction,
-  DiffAction
+  DiffAction,
+  UpdateAction
 } from '../actions';
 import chalk from 'chalk';
+import { InitAction } from '../actions/InitAction';
+import { LinkAction } from '../actions/LinkAction';
+import { StatusAction } from '../actions/StatusAction';
+import { TestAction } from '../actions/TestAction';
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
@@ -55,20 +60,27 @@ export const MvsProgram: IProgram = ({ args }) => {
     },
     actions: {
       build: {
+        description: `build 'dist/' directory`,
         action: () => BuildAction({
           cliConfig,
           platformName,
-          typeFilter: args[0]
+          typeFilter: args[0],
+          nameFilter: args[1]
         }),
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
+          },
+          {
+            name: 'name',
+            required: false
           }
         ]
       },
       checkout: {
+        description: `checkout 'master' branch`,
         action: () => CheckoutAction({
           cliConfig,
           platformName,
@@ -78,7 +90,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -88,6 +100,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       clone: {
+        description: `clone repositories`,
         action: () => CloneAction({
           cliConfig,
           platformName,
@@ -97,7 +110,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -107,6 +120,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       code: {
+        description: `open in vscode`,
         action: () => CodeAction({
           cliConfig,
           platformName,
@@ -116,7 +130,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -126,6 +140,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       diff: {
+        description: `git diff`,
         action: () => DiffAction({
           cliConfig,
           platformName,
@@ -135,7 +150,27 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      init: {
+        description: `clone, install and build`,
+        action: () => InitAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -145,20 +180,47 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       install: {
+        description: `install dependencies`,
         action: () => InstallAction({
           cliConfig,
           platformName,
-          typeFilter: args[0]
+          typeFilter: args[0],
+          nameFilter: args[1]
         }),
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      link: {
+        description: 'link packages',
+        action: () => LinkAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
           }
         ]
       },
       list: {
+        description: 'list all apps, gateways, services and tools',
         action: () => ListAction({
           cliConfig,
           platformName,
@@ -167,12 +229,13 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           }
         ]
       },
       logs: {
+        description: 'watch logs',
         action: () => LogsAction({
           cliConfig,
           platformName,
@@ -182,30 +245,37 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
             name: 'name',
-            required: true
+            required: false
           }
         ]
       },
       pull: {
+        description: `pull latest from 'master'`,
         action: () => PullAction({
           cliConfig,
           platformName,
-          typeFilter: args[0]
+          typeFilter: args[0],
+          nameFilter: args[1]
         }),
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
+          },
+          {
+            name: 'name',
+            required: false
           }
         ]
       },
       reset: {
+        description: `git reset --hard ${chalk.red('VERY DANGEROUS')}`,
         action: () => ResetAction({
           cliConfig,
           platformName,
@@ -215,7 +285,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -225,6 +295,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       start: {
+        description: 'start packages',
         action: () => StartAction({
           cliConfig,
           platformName,
@@ -234,7 +305,27 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      status: {
+        description: 'check git status',
+        action: () => StatusAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -244,6 +335,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       stop: {
+        description: 'stop packages',
         action: () => StopAction({
           cliConfig,
           // platformName,
@@ -253,7 +345,47 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'app', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      test: {
+        description: 'test packages',
+        action: () => TestAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      update: {
+        description: 'update dependencies',
+        action: () => UpdateAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {

@@ -1,10 +1,9 @@
-import { spawn } from 'child_process';
-import * as fs from 'fs';
 import * as forEach from 'p-map';
+import * as fs from 'fs';
 import * as path from 'path';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, toArtifactArray } from '../functions';
+import { loadConfig, formatPath, gitClone, saveConfig, toArtifactArray } from '../functions';
 import { homedir } from 'os';
 import chalk from 'chalk';
 
@@ -13,29 +12,6 @@ interface IProps {
   platformName: string;
   typeFilter: string;
   nameFilter?: string;
-}
-
-const gitClone = (cwd: string, url: string) => {
-  if (fs.existsSync(cwd)) {
-    throw new Error(`Directory already exists: ${cwd}`);
-  }
-  return new Promise((resolve, reject) => {
-    // create new daemon process
-    const child = spawn(
-      'git',
-      ['clone', url, cwd],
-      {
-        stdio: ['ignore', process.stdout, process.stdout]
-      }
-    );
-    child.on('close', result => {
-      if (result === 0) {
-        resolve(result);
-      } else {
-        reject(new Error('Unable to clone repository.'));
-      }
-    });
-  });
 }
 
 export const CloneAction: IAction<IProps> = async ({
@@ -53,13 +29,16 @@ export const CloneAction: IAction<IProps> = async ({
     const from = `https://${artifact.repo.host}${artifact.repo.path}`;
     const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
+    if (fs.existsSync(to)) {
+      console.log(chalk.yellow(`Directory already exists: ${formatPath(to)}`));
+      return;
+    }  
+
     console.log(chalk.bold(`Cloning from '${from}'...`));
 
     await gitClone(to, from);
 
   }, { concurrency: 1 });
-
-  console.log(chalk.green('Done.'));
 
   saveConfig(config);
 };

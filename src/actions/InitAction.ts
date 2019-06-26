@@ -1,11 +1,11 @@
-import chalk from 'chalk';
 import * as fs from 'fs';
 import { homedir } from 'os';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, npmBuild, saveConfig, toArtifactArray, parseType } from '../functions';
+import { gitClone, gitPull, loadConfig, npmBuild, npmInstall, saveConfig, toArtifactArray, parseType, formatPath } from '../functions';
+import chalk from 'chalk';
 
 interface IProps {
   cliConfig: any;
@@ -14,7 +14,7 @@ interface IProps {
   nameFilter: string;
 }
 
-export const BuildAction: IAction<IProps> = async ({
+export const InitAction: IAction<IProps> = async ({
   cliConfig,
   platformName,
   typeFilter,
@@ -26,16 +26,19 @@ export const BuildAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
 
   await forEach(artifacts, async artifact => {
-    const buildDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    const from = `https://${artifact.repo.host}${artifact.repo.path}`;
+    const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Building ${buildDir}...`));
+    console.log(chalk.bold(`Initializing ${formatPath(to)}...`));
 
-    if (!fs.existsSync(buildDir)) {
-      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
-      return;
+    if (!fs.existsSync(to)) {
+      await gitClone(to, from);
+    } else {
+      await gitPull(to);
     }
+    await npmInstall(to);
+    await npmBuild(to);
 
-    await npmBuild(buildDir);
   }, { concurrency: 1 });
 
   saveConfig(config);

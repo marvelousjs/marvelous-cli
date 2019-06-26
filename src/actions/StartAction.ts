@@ -35,11 +35,17 @@ export const StartAction: IAction<IProps> = ({
   artifacts.forEach(artifact => {
     const artifactDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
     if (!fs.existsSync(artifactDir)) {
-      throw new Error(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`);
+      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
     }
   });
 
   artifacts.forEach(artifact => {
+    // tools NEVER start
+    if (artifact.type === 'tool') {
+      return;
+    }
+
     const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
     if (currentDaemon) {
       throw new Error(
@@ -51,10 +57,10 @@ export const StartAction: IAction<IProps> = ({
 
     const randomPort = (() => {
       if (artifact.type === 'app') {
-        return random(3100, 3999);
+        return random(8100, 8999);
       }
       if (artifact.type === 'gateway') {
-        return random(3100, 3999);
+        return random(4100, 4999);
       }
       if (artifact.type === 'service') {
         return random(3100, 3999);

@@ -1,11 +1,11 @@
-import chalk from 'chalk';
 import * as fs from 'fs';
 import { homedir } from 'os';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, npmBuild, saveConfig, toArtifactArray, parseType } from '../functions';
+import { npmLink, loadConfig, saveConfig, toArtifactArray, parseType, formatPath } from '../functions';
+import chalk from 'chalk';
 
 interface IProps {
   cliConfig: any;
@@ -14,7 +14,7 @@ interface IProps {
   nameFilter: string;
 }
 
-export const BuildAction: IAction<IProps> = async ({
+export const LinkAction: IAction<IProps> = async ({
   cliConfig,
   platformName,
   typeFilter,
@@ -26,16 +26,16 @@ export const BuildAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
 
   await forEach(artifacts, async artifact => {
-    const buildDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    const linkDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Building ${buildDir}...`));
+    console.log(chalk.bold(`Linking ${formatPath(linkDir)}...`));
 
-    if (!fs.existsSync(buildDir)) {
+    if (!fs.existsSync(linkDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
       return;
     }
 
-    await npmBuild(buildDir);
+    await npmLink(linkDir);
   }, { concurrency: 1 });
 
   saveConfig(config);

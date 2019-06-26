@@ -8,6 +8,9 @@ export interface IPlatformConfig {
   services?: {
     [name: string]: IPlatformConfigArtifact;
   };
+  tools?: {
+    [name: string]: IPlatformConfigArtifact;
+  };
 }
 
 export interface IPlatformConfigArtifact {

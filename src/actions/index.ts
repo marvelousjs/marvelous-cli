@@ -10,3 +10,4 @@ export * from './PullAction';
 export * from './ResetAction';
 export * from './StartAction';
 export * from './StopAction';
+export * from './UpdateAction';

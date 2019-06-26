@@ -28,9 +28,16 @@ export const toArtifactArray: IToArtifactArray = (config, filter = {}) => {
     type: 'service'
   }));
 
+  const tools = Object.entries(config.tools).map(([name, tool]) => ({
+    ...tool,
+    name,
+    type: 'tool'
+  }));
+
   return apps
     .concat(gateways)
     .concat(services)
+    .concat(tools)
     .filter(
       artifact =>
         (!filter.type || filter.type === 'all' || filter.type === artifact.type) &&

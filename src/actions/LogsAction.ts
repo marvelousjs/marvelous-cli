@@ -1,11 +1,10 @@
 import chalk from 'chalk';
-import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, parseType, toArtifactArray } from '../functions';
+import { loadConfig, saveConfig, parseType, tailLogs, toArtifactArray } from '../functions';
 import { homedir } from 'os';
 
 interface IProps {
@@ -13,21 +12,6 @@ interface IProps {
   platformName: string;
   typeFilter: string;
   nameFilter: string;
-}
-
-const tailLogs = (cwd: string) => {
-  return new Promise((resolve) => {
-    // create new daemon process
-    const child = spawn(
-      'tail',
-      ['-f', cwd],
-      {
-        stdio: ['ignore', process.stdout, process.stdout]
-      }
-    );
-    child.on('message', console.log);
-    child.on('close', resolve);
-  });
 }
 
 export const LogsAction: IAction<IProps> = async ({
@@ -47,7 +31,8 @@ export const LogsAction: IAction<IProps> = async ({
     console.log(chalk.bold(`Logs for '${logDir}'...`));
 
     if (!fs.existsSync(logDir)) {
-      throw new Error(`Logs do not exist for ${artifact.repo.name}.`);
+      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
     }
 
     await tailLogs(logDir);

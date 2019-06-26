@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, toArtifactArray, parseType } from '../functions';
+import { loadConfig, toArtifactArray, parseType, formatPath } from '../functions';
 import { IArtifact } from '../interfaces';
 
 interface IProps {
@@ -33,11 +33,14 @@ export const ListAction: IAction<IProps> = ({
     const dir = `${homedir()}/Developer/${platformName}/${artifact.repo.name}`;
     let dirOutput = chalk.gray('(none)');
     if (fs.existsSync(dir)) {
-      dirOutput = dir;
+      dirOutput = formatPath(dir);
     }
 
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
-    const status = currentDaemon ? chalk.green('on ') : chalk.red('off');
+    let status = '   ';
+    if (artifact.type !== 'tool') {
+      const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+      status = currentDaemon ? chalk.green('on ') : chalk.red('off');
+    }
 
     console.log(`${status} ${artifact.name.padEnd(16)} ${artifact.type.padEnd(8)} ${dirOutput}`);
   });
