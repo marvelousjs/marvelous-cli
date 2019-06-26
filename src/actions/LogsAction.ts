@@ -31,7 +31,7 @@ export const LogsAction: IAction<IProps> = async ({
     console.log(chalk.bold(`Logs for '${formatPath(logDir)}'...`));
 
     if (!fs.existsSync(logDir)) {
-      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      console.log(chalk.yellow(`Logs don't exist yet for ${artifact.type} ${artifact.name}'.`));
       return;
     }
 
