@@ -465,7 +465,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       remove: {
-        description: 'add all files to git',
+        description: 'remove all files from git',
         action: () => RemoveAction({
           cliConfig,
           platformName,
