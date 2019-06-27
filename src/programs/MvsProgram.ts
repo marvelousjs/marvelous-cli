@@ -3,35 +3,41 @@ import * as path from 'path';
 import { IProgram } from '@marvelousjs/program';
 
 import {
+  AddAction,
+  BranchAction,
   BuildAction,
+  CdAction,
   CheckoutAction,
   CloneAction,
   CodeAction,
+  CommitAction,
+  DependenciesAction,
   DiffAction,
   DirAction,
   EnvAction,
+  GenerateAction,
+  HistoryAction,
+  InitAction,
   InstallAction,
+  LinkAction,
   ListAction,
   LogsAction,
+  OpenAction,
+  OutdatedAction,
   PullAction,
+  PushAction,
   ReinitAction,
   RemoveAction,
   ResetAction,
+  ShoveAction,
   StartAction,
+  StatusAction,
   StopAction,
-  UpdateAction,
-  PushAction
+  TestAction,
+  UnlinkAction,
+  UpdateAction
 } from '../actions';
 import chalk from 'chalk';
-import { InitAction } from '../actions/InitAction';
-import { LinkAction } from '../actions/LinkAction';
-import { StatusAction } from '../actions/StatusAction';
-import { TestAction } from '../actions/TestAction';
-import { CdAction } from '../actions/CdAction';
-import { OpenAction } from '../actions/OpenAction';
-import { GenerateAction } from '../actions/GenerateAction';
-import { AddAction } from '../actions/AddAction';
-import { CommitAction } from '../actions/CommitAction';
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
@@ -72,6 +78,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       add: {
         description: 'add all files to git',
         action: () => AddAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      branch: {
+        description: 'get branch for repos',
+        action: () => BranchAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
@@ -209,6 +235,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      dependencies: {
+        description: 'view dependencies for package',
+        action: () => DependenciesAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       diff: {
         description: `git diff`,
         action: () => DiffAction({
@@ -281,6 +327,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'gateway', 'service'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      history: {
+        description: 'view git history',
+        action: () => HistoryAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: true
           },
           {
@@ -404,6 +470,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      outdated: {
+        description: 'check for outdated dependencies',
+        action: () => OutdatedAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       pull: {
         description: `pull latest from 'origin/master'`,
         action: () => PullAction({
@@ -504,6 +590,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      shove: {
+        description: `add/commit all files to git & push your commit to 'origin/master' ${chalk.yellow('BE CAREFUL')}`,
+        action: () => ShoveAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       start: {
         description: 'start packages',
         action: () => StartAction({
@@ -567,6 +673,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       test: {
         description: 'test packages',
         action: () => TestAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      unlink: {
+        description: 'unlink packages',
+        action: () => UnlinkAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
