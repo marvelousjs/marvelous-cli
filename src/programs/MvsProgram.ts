@@ -6,15 +6,16 @@ import {
   BuildAction,
   CheckoutAction,
   CloneAction,
+  CodeAction,
+  DiffAction,
   InstallAction,
   ListAction,
   LogsAction,
   PullAction,
+  ReinitAction,
+  ResetAction,
   StartAction,
   StopAction,
-  CodeAction,
-  ResetAction,
-  DiffAction,
   UpdateAction
 } from '../actions';
 import chalk from 'chalk';
@@ -182,7 +183,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       init: {
-        description: `clone, install and build`,
+        description: `clone/pull, install and build`,
         action: () => InitAction({
           cliConfig,
           platformName,
@@ -299,6 +300,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       pull: {
         description: `pull latest from 'master'`,
         action: () => PullAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      reinit: {
+        description: `clone/pull, install and build + git reset --hard ${chalk.red('VERY DANGEROUS')}`,
+        action: () => ReinitAction({
           cliConfig,
           platformName,
           typeFilter: args[0],

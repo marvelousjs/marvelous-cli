@@ -7,6 +7,7 @@ export * from './InstallAction';
 export * from './ListAction';
 export * from './LogsAction';
 export * from './PullAction';
+export * from './ReinitAction';
 export * from './ResetAction';
 export * from './StartAction';
 export * from './StopAction';
