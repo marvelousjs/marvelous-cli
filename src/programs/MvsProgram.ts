@@ -8,6 +8,7 @@ import {
   CloneAction,
   CodeAction,
   DiffAction,
+  EnvAction,
   InstallAction,
   ListAction,
   LogsAction,
@@ -165,6 +166,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       diff: {
         description: `git diff`,
         action: () => DiffAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      env: {
+        description: `view environment variables`,
+        action: () => EnvAction({
           cliConfig,
           platformName,
           typeFilter: args[0],

@@ -3,6 +3,7 @@ export * from './CheckoutAction';
 export * from './CloneAction';
 export * from './CodeAction';
 export * from './DiffAction';
+export * from './EnvAction';
 export * from './InstallAction';
 export * from './ListAction';
 export * from './LogsAction';
