@@ -20,6 +20,7 @@ export * from './npmLink';
 export * from './npmTest';
 export * from './npmUpdate';
 export * from './open';
+export * from './parseEnvVar';
 export * from './parseType';
 export * from './random';
 export * from './saveConfig';

@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { npmTest, loadConfig, saveConfig, toArtifactArray, parseType, formatPath, random } from '../functions';
+import { npmTest, loadConfig, saveConfig, toArtifactArray, parseType, formatPath, random, parseEnvVar } from '../functions';
 import chalk from 'chalk';
 
 interface IProps {
@@ -45,7 +45,7 @@ export const TestAction: IAction<IProps> = async ({
       }
     })();
 
-    envMapping[`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`] = `http://localhost:${randomPort}`;
+    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${randomPort}`;
   });
 
   await forEach(artifacts, async artifact => {

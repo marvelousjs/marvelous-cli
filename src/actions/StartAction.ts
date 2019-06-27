@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, parseType, random, saveConfig, toArtifactArray } from '../functions';
+import { loadConfig, parseType, random, saveConfig, toArtifactArray, parseEnvVar } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -52,7 +52,7 @@ export const StartAction: IAction<IProps> = ({
       }
     })();
 
-    envMapping[`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`] = `http://localhost:${randomPort}`;
+    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${randomPort}`;
     portMapping[artifact.repo.name] = randomPort;
   });
 
