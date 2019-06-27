@@ -1,6 +1,6 @@
 {
   "name": "@marvelousjs/cli",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "the marvelous cli",
   "main": "dist/index.js",
   "dependencies": {
