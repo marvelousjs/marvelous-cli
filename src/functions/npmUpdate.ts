@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import * as path from 'path';
 
 export const npmUpdate = (cwd: string) => {
   return new Promise((resolve, reject) => {
@@ -9,6 +10,11 @@ export const npmUpdate = (cwd: string) => {
     });
     child.on('close', result => {
       if (result === 0) {
+        const pkg = require(path.join(cwd, 'package.json'));
+        if (!pkg.scripts.postinstall) {
+          resolve(result);
+          return;
+        }
         const child = spawn('npm', ['run', 'postinstall'], {
           cwd,
           stdio: ['ignore', process.stdout, process.stdout]
