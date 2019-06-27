@@ -62,11 +62,19 @@ export const EnvAction: IAction<IProps> = async ({
       Object.entries(env).forEach(([name, value]: [string, string]) => {
         if (envMapping[name] === 'NODE_ENV') {
           value = 'development';
-        } else if (value === undefined) {
+        } else if (envMapping[name] === `${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`) {
+          const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+          if (currentDaemon) {
+            value = `http://localhost:${currentDaemon.port}`;
+          }
+        }
+        
+        if (value === undefined) {
           value = chalk.gray('(undefined)');
         } else if (value.length === 0) {
           value = chalk.gray('(empty)');
         }
+        
         console.log(`${envMapping[name]} -> ${name}: ${value}`);
       });
 

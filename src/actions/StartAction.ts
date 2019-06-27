@@ -32,20 +32,14 @@ export const StartAction: IAction<IProps> = ({
     type: parseType(typeFilter).singular
   });
 
-  artifacts.forEach(artifact => {
-    const artifactDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
-    if (!fs.existsSync(artifactDir)) {
-      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
-      return;
-    }
-  });
-
+  const envMapping: any = {};
+  const portMapping: any = {};
   artifacts.forEach(artifact => {
     // tools NEVER start
     if (artifact.type === 'tool') {
       return;
     }
-
+    
     const randomPort = (() => {
       if (artifact.type === 'app') {
         return random(8100, 8999);
@@ -58,7 +52,23 @@ export const StartAction: IAction<IProps> = ({
       }
     })();
 
-    console.log(chalk.bold(`Starting ${artifact.name} ${artifact.type} on port ${randomPort}...`));
+    envMapping[`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`] = `http://localhost:${randomPort}`;
+    portMapping[artifact.repo.name] = randomPort;
+  });
+
+  artifacts.forEach(artifact => {
+    // tools NEVER start
+    if (artifact.type === 'tool') {
+      return;
+    }
+
+    console.log(chalk.bold(`Starting ${artifact.name} ${artifact.type} on port ${portMapping[artifact.repo.name]}...`));
+
+    const artifactDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    if (!fs.existsSync(artifactDir)) {
+      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
+    }
 
     // get files
     const logFile = path.join(homedir(), `.mvs/logs/${platformName}/${artifact.repo.name}.log`);
@@ -80,27 +90,30 @@ export const StartAction: IAction<IProps> = ({
       );
     }
 
+    const env = {
+      ...process.env,
+      NODE_ENV: 'development',
+      ...envMapping
+    };
+      
     // create new daemon process
     const child = spawn('npm', ['run', 'start:dev'], {
       cwd: path.join(homedir(), 'Developer', platformName, artifact.repo.name),
       detached: true,
-      env: {
-        ...process.env,
-        NODE_ENV: 'development',
-        [`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`]: `http://localhost:${randomPort}`
-      },
+      env,
       stdio: ['ignore', fs.openSync(logFile, 'a'), fs.openSync(logFile, 'a')]
     });
 
     try {
-      if (config.daemons.find(d => d.port === randomPort)) {
+      if (config.daemons.find(d => d.port === portMapping[artifact.repo.name])) {
         throw new Error(`Failed to generate random port. Please try again.`);
       }
 
       config.daemons.push({
         name: artifact.repo.name,
         pid: child.pid,
-        port: randomPort
+        port: portMapping[artifact.repo.name],
+        env
       });
     } finally {
       child.unref();

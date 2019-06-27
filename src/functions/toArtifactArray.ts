@@ -1,7 +1,7 @@
 import { IPlatformConfig, IArtifact } from '../interfaces';
 
 interface IToArtifactArray {
-  (config: IPlatformConfig, filter?: IFilter): IArtifact[];
+  (config: IPlatformConfig, filter?: IFilter, opts?: IOptions): IArtifact[];
 }
 
 interface IFilter {
@@ -9,7 +9,11 @@ interface IFilter {
   type?: string;
 }
 
-export const toArtifactArray: IToArtifactArray = (config, filter = {}) => {
+interface IOptions {
+  reverse?: boolean;
+}
+
+export const toArtifactArray: IToArtifactArray = (config, filter = {}, { reverse = false } = {}) => {
   const apps = Object.entries(config.apps).map(([name, app]) => ({
     ...app,
     name,
@@ -34,10 +38,17 @@ export const toArtifactArray: IToArtifactArray = (config, filter = {}) => {
     type: 'tool'
   }));
 
-  return apps
-    .concat(gateways)
-    .concat(services)
-    .concat(tools)
+  const array = reverse
+    ? tools
+      .concat(services)
+      .concat(gateways)
+      .concat(apps)
+    : apps
+      .concat(gateways)
+      .concat(services)
+      .concat(tools);
+
+  return array
     .filter(
       artifact =>
         (!filter.type || filter.type === 'all' || filter.type === artifact.type) &&

@@ -8,16 +8,19 @@ import {
   CloneAction,
   CodeAction,
   DiffAction,
+  DirAction,
   EnvAction,
   InstallAction,
   ListAction,
   LogsAction,
   PullAction,
   ReinitAction,
+  RemoveAction,
   ResetAction,
   StartAction,
   StopAction,
-  UpdateAction
+  UpdateAction,
+  PushAction
 } from '../actions';
 import chalk from 'chalk';
 import { InitAction } from '../actions/InitAction';
@@ -26,6 +29,9 @@ import { StatusAction } from '../actions/StatusAction';
 import { TestAction } from '../actions/TestAction';
 import { CdAction } from '../actions/CdAction';
 import { OpenAction } from '../actions/OpenAction';
+import { GenerateAction } from '../actions/GenerateAction';
+import { AddAction } from '../actions/AddAction';
+import { CommitAction } from '../actions/CommitAction';
 
 const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
@@ -63,6 +69,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       f: 'force'
     },
     actions: {
+      add: {
+        description: 'add all files to git',
+        action: () => AddAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       build: {
         description: `build 'dist/' directory`,
         action: () => BuildAction({
@@ -163,9 +189,49 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      commit: {
+        description: `commit all files to git (requires 'MSG' variable)`,
+        action: () => CommitAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       diff: {
         description: `git diff`,
         action: () => DiffAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      dir: {
+        description: 'get directory for packages',
+        action: () => DirAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
@@ -195,6 +261,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      generate: {
+        description: 'generate types and client code',
+        action: () => GenerateAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'gateway', 'service'],
             required: true
           },
           {
@@ -319,8 +405,28 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       pull: {
-        description: `pull latest from 'master'`,
+        description: `pull latest from 'origin/master'`,
         action: () => PullAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      push: {
+        description: `push your commit to 'origin/master'`,
+        action: () => PushAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
@@ -341,6 +447,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       reinit: {
         description: `clone/pull, install and build + git reset --hard ${chalk.red('VERY DANGEROUS')}`,
         action: () => ReinitAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: true
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      remove: {
+        description: 'add all files to git',
+        action: () => RemoveAction({
           cliConfig,
           platformName,
           typeFilter: args[0],

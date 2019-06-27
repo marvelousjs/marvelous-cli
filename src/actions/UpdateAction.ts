@@ -23,7 +23,7 @@ export const UpdateAction: IAction<IProps> = async ({
   // load config
   const config = loadConfig();
 
-  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
+  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
 
   await forEach(artifacts, async artifact => {
     const updateDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);

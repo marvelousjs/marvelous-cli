@@ -24,17 +24,15 @@ export const TestAction: IAction<IProps> = async ({
   const config = loadConfig();
 
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
+  const unfilteredArtifacts = toArtifactArray(cliConfig);
 
-  await forEach(artifacts, async artifact => {
-    const testDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
-
-    console.log(chalk.bold(`Testing '${formatPath(testDir)}'...`));
-
-    if (!fs.existsSync(testDir)) {
-      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+  const envMapping: any = {};
+  unfilteredArtifacts.forEach(artifact => {
+    // tools NEVER start
+    if (artifact.type === 'tool') {
       return;
     }
-
+    
     const randomPort = (() => {
       if (artifact.type === 'app') {
         return random(8100, 8999);
@@ -47,7 +45,20 @@ export const TestAction: IAction<IProps> = async ({
       }
     })();
 
-    await npmTest(testDir, artifact.repo.name, randomPort);
+    envMapping[`${artifact.repo.name.toUpperCase().replace(/-/g, '_')}_URL`] = `http://localhost:${randomPort}`;
+  });
+
+  await forEach(artifacts, async artifact => {
+    const testDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+
+    console.log(chalk.bold(`Testing '${formatPath(testDir)}'...`));
+
+    if (!fs.existsSync(testDir)) {
+      console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
+    }
+
+    await npmTest(testDir, envMapping);
 
   }, { concurrency: 1 });
 

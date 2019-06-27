@@ -7,6 +7,9 @@ export interface IConfig {
 }
 
 export interface IConfigDaemon {
+  env: {
+    [name: string]: string;
+  };
   name: string;
   pid: number;
   port: number;

@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { gitClone, gitPull, loadConfig, npmBuild, npmInstall, saveConfig, toArtifactArray, parseType, formatPath, gitReset } from '../functions';
+import { gitClone, gitPull, loadConfig, npmBuild, npmInstall, saveConfig, toArtifactArray, parseType, formatPath, gitReset, npmLink } from '../functions';
 import chalk from 'chalk';
 
 interface IProps {
@@ -23,7 +23,7 @@ export const ReinitAction: IAction<IProps> = async ({
   // load config
   const config = loadConfig();
 
-  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
+  const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
 
   console.log(chalk.yellow(`WARNING: Any changes to these repos will be lost. Press CTRL+C to cancel. Proceeding in 10 seconds...`))
 
@@ -42,6 +42,7 @@ export const ReinitAction: IAction<IProps> = async ({
       }
       await npmInstall(to);
       await npmBuild(to);
+      await npmLink(to);
   
     }, { concurrency: 1 });
   }, 10 * 1000);

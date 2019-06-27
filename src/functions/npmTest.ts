@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import * as path from 'path';
 
-export const npmTest = (cwd: string, repoName: string, randomPort: number) => {
+export const npmTest = (cwd: string, envMapping = {}) => {
   return new Promise(resolve => {
     // create new daemon process
     const pkg = require(path.join(cwd, 'package.json'));
@@ -11,7 +11,7 @@ export const npmTest = (cwd: string, repoName: string, randomPort: number) => {
       env: {
         ...process.env,
         NODE_ENV: 'test',
-        [`${repoName.toUpperCase().replace(/-/g, '_')}_URL`]: `http://localhost:${randomPort}`
+        ...envMapping
       },
       stdio: ['ignore', process.stdout, process.stdout]
     });
