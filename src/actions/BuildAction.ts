@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, npmBuild, saveConfig, toArtifactArray, parseType, formatPath } from '../functions';
+import { loadConfig, npmBuild, saveConfig, toArtifactArray, parseType, random, parseEnvVar, formatPath } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -25,6 +25,30 @@ export const BuildAction: IAction<IProps> = async ({
 
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
 
+  const envMapping: any = {};
+  const portMapping: any = {};
+  artifacts.forEach(artifact => {
+    // tools NEVER start
+    if (artifact.type === 'tool') {
+      return;
+    }
+    
+    const randomPort = (() => {
+      if (artifact.type === 'app') {
+        return random(8100, 8999);
+      }
+      if (artifact.type === 'gateway') {
+        return random(4100, 4999);
+      }
+      if (artifact.type === 'service') {
+        return random(3100, 3999);
+      }
+    })();
+
+    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${randomPort}`;
+    portMapping[artifact.repo.name] = randomPort;
+  });
+
   await forEach(artifacts, async artifact => {
     const buildDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
@@ -35,7 +59,7 @@ export const BuildAction: IAction<IProps> = async ({
       return;
     }
 
-    await npmBuild(buildDir);
+    await npmBuild(buildDir, envMapping);
   }, { concurrency: 1 });
 
   saveConfig(config);
