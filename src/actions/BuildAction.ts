@@ -24,10 +24,11 @@ export const BuildAction: IAction<IProps> = async ({
   const config = loadConfig();
 
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
+  const unfilteredArtifacts = toArtifactArray(cliConfig);
 
   const envMapping: any = {};
   const portMapping: any = {};
-  artifacts.forEach(artifact => {
+  unfilteredArtifacts.forEach(artifact => {
     // tools NEVER start
     if (artifact.type === 'tool') {
       return;
