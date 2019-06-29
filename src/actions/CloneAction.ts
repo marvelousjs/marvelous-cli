@@ -26,7 +26,7 @@ export const CloneAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: typeFilter });
 
   await forEach(artifacts, async (artifact) => {
-    const from = `https://${artifact.repo.host}${artifact.repo.path}`;
+    const from = `git@${artifact.repo.host}${artifact.repo.path.replace(/^\//, ':')}`;
     const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
     if (fs.existsSync(to)) {
