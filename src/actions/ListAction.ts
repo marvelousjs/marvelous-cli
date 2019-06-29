@@ -41,7 +41,7 @@ export const ListAction: IAction<IProps> = async ({
         status = chalk.green('on ');
         url = `http://localhost:${currentDaemon.port}`;
       } else {
-        chalk.red('off');
+        status = chalk.red('off');
       }
     }
 
