@@ -1,6 +1,7 @@
+import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, parseType, saveConfig, toArtifactArray } from '../functions';
+import { killPid, loadConfig, parseType, saveConfig, toArtifactArray } from '../functions';
 import chalk from 'chalk';
 
 interface IProps {
@@ -10,7 +11,7 @@ interface IProps {
   typeFilter: string;
 }
 
-export const StopAction: IAction<IProps> = ({
+export const StopAction: IAction<IProps> = async ({
   cliConfig,
   // platformName,
   nameFilter,
@@ -28,17 +29,18 @@ export const StopAction: IAction<IProps> = ({
     type: parseType(typeFilter).singular
   });
 
-  artifacts.forEach(artifact => {
+  await forEach(artifacts, async (artifact) => {
     const currentDaemonIndex = config.daemons.findIndex(d => d.name === artifact.repo.name);
     if (currentDaemonIndex !== -1) {
       console.log(chalk.bold(`Stopping ${artifact.name} ${artifact.type}...`));
 
-      try {
-        process.kill(config.daemons[currentDaemonIndex].pid);
-      } catch {}
-      config.daemons.splice(currentDaemonIndex, 1);
-    }
-  });
+      const pid = config.daemons[currentDaemonIndex].pid;
 
-  saveConfig(config);
+      await killPid(pid);
+
+      config.daemons.splice(currentDaemonIndex, 1);
+
+      saveConfig(config);
+    }
+  }, { concurrency: 1 });
 };

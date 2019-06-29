@@ -11,6 +11,7 @@ import {
   CloneAction,
   CodeAction,
   CommitAction,
+  CurlAction,
   DependenciesAction,
   DiffAction,
   DirAction,
@@ -29,13 +30,13 @@ import {
   ReinitAction,
   RemoveAction,
   ResetAction,
-  ShoveAction,
   StartAction,
   StatusAction,
   StopAction,
   TestAction,
   UnlinkAction,
-  UpdateAction
+  UpdateAction,
+  CleanAction
 } from '../actions';
 import chalk from 'chalk';
 
@@ -175,6 +176,26 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
+      clean: {
+        description: `clean packages (deletes 'dist/' and 'node_modules/' folders)`,
+        action: () => CleanAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: false
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
       clone: {
         description: `clone repositories`,
         action: () => CloneAction({
@@ -218,6 +239,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       commit: {
         description: `commit all files to git (requires 'MSG' variable)`,
         action: () => CommitAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: false
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      curl: {
+        description: `run curl`,
+        action: () => CurlAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
@@ -590,14 +631,21 @@ export const MvsProgram: IProgram = ({ args }) => {
           }
         ]
       },
-      shove: {
-        description: `add/commit all files to git & push your commit to 'origin/master' ${chalk.yellow('BE CAREFUL')}`,
-        action: () => ShoveAction({
-          cliConfig,
-          platformName,
-          typeFilter: args[0],
-          nameFilter: args[1]
-        }),
+      restart: {
+        description: 'restart packages',
+        action: async () => {
+          await StopAction({
+            cliConfig,
+            typeFilter: args[0],
+            nameFilter: args[1]
+          });
+          await StartAction({
+            cliConfig,
+            platformName,
+            typeFilter: args[0],
+            nameFilter: args[1]
+          });
+        },
         args: [
           {
             name: 'type',

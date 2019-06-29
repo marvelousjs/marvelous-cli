@@ -13,7 +13,7 @@ interface IProps {
   typeFilter: string;
 }
 
-export const ListAction: IAction<IProps> = ({
+export const ListAction: IAction<IProps> = async ({
   cliConfig = {},
   platformName,
   typeFilter

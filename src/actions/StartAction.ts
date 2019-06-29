@@ -14,7 +14,7 @@ interface IProps {
   nameFilter: string;
 }
 
-export const StartAction: IAction<IProps> = ({
+export const StartAction: IAction<IProps> = async ({
   cliConfig,
   platformName,
   typeFilter,

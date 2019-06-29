@@ -26,16 +26,16 @@ export const DiffAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular });
 
   await forEach(artifacts, async artifact => {
-    const pullDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    const diffDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Diff for '${formatPath(pullDir)}'...`));
+    console.log(chalk.bold(`Diff for '${formatPath(diffDir)}'...`));
 
-    if (!fs.existsSync(pullDir)) {
+    if (!fs.existsSync(diffDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
       return;
     }
 
-    await gitDiff(pullDir);
+    await gitDiff(diffDir);
   }, { concurrency: 1 });
 
   saveConfig(config);

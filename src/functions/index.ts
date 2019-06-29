@@ -1,5 +1,6 @@
 export * from './cd';
 export * from './code';
+export * from './curl';
 export * from './formatPath';
 export * from './gitAdd';
 export * from './gitBranch';
@@ -13,6 +14,7 @@ export * from './gitPush';
 export * from './gitRemove';
 export * from './gitReset';
 export * from './gitStatus';
+export * from './killPid';
 export * from './loadConfig';
 export * from './loadPlatformConfig';
 export * from './npmBuild';
