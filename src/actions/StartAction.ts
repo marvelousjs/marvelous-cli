@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 import { homedir } from 'os';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, parseType, random, saveConfig, toArtifactArray, parseEnvVar } from '../functions';
+import { isRunning, loadConfig, parseType, random, saveConfig, toArtifactArray, parseEnvVar } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -42,7 +42,7 @@ export const StartAction: IAction<IProps> = async ({
     }
     
     let port = 0;
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
     if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
       port = Number(process.env[`${parseEnvVar(artifact.repo.name)}_URL`].split(':').slice(-1)[0]);
     } else if (currentDaemon) {
@@ -74,8 +74,18 @@ export const StartAction: IAction<IProps> = async ({
     console.log(chalk.bold(`Starting ${artifact.name} ${artifact.type} on port ${portMapping[artifact.repo.name]}...`));
 
     const artifactDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
-    if (!fs.existsSync(artifactDir)) {
+    const isCloned = fs.existsSync(artifactDir);
+    const isInstalled = fs.existsSync(path.join(artifactDir, 'node_modules'));
+    const isBuilt = fs.existsSync(path.join(artifactDir, 'dist'));
+
+    if (!isCloned) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
+    } else if (!isInstalled) {
+      console.log(chalk.yellow(`'node_modules/' does not exist. Try '${platformName} install ${artifact.type} ${artifact.name}'.`));
+      return;
+    } else if (!isBuilt) {
+      console.log(chalk.yellow(`'dist/' does not exist. Try '${platformName} build ${artifact.type} ${artifact.name}'.`));
       return;
     }
 
@@ -88,7 +98,7 @@ export const StartAction: IAction<IProps> = async ({
       fs.mkdirSync(logDir, { recursive: true });
     }
 
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
     if (currentDaemon) {
       console.log(
         chalk.yellow(

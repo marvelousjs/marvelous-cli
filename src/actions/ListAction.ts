@@ -4,7 +4,7 @@ import { homedir } from 'os';
 import * as path from 'path';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, toArtifactArray, parseType } from '../functions';
+import { loadConfig, toArtifactArray, parseType, isRunning } from '../functions';
 import { IArtifact } from '../interfaces';
 
 interface IProps {
@@ -33,12 +33,12 @@ export const ListAction: IAction<IProps> = async ({
   artifacts.forEach((artifact: IArtifact) => {
     const dir = path.normalize(`${homedir()}/Developer/${platformName}/${artifact.repo.name}`);
 
-    let status = '   ';
+    let status = chalk.red('off');
     let url = '';
     if (artifact.type !== 'tool') {
-      const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
-      status = currentDaemon ? chalk.green('on ') : chalk.red('off');
-      if (currentDaemon) {
+      const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
+      if (currentDaemon && isRunning(currentDaemon.pid)) {
+        status = chalk.green('on ');
         url = `http://localhost:${currentDaemon.port}`;
       }
     }

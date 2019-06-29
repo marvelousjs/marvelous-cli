@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { curl, loadConfig, saveConfig, toArtifactArray, parseType } from '../functions';
+import { curl, loadConfig, saveConfig, toArtifactArray, parseType, isRunning } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -33,7 +33,7 @@ export const CurlAction: IAction<IProps> = async ({
         return;
       }
 
-      const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+      const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
       if (!currentDaemon) {
         console.log(chalk.yellow(`${artifact.repo.name} is not currently running`));
         return;

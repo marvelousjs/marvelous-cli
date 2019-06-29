@@ -55,8 +55,14 @@ export const BuildAction: IAction<IProps> = async ({
 
     console.log(chalk.bold(`Building '${formatPath(buildDir)}'...`));
 
-    if (!fs.existsSync(buildDir)) {
+    const isCloned = fs.existsSync(buildDir);
+    const isInstalled = fs.existsSync(path.join(buildDir, 'node_modules'));
+
+    if (!isCloned) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
+      return;
+    } else if (!isInstalled) {
+      console.log(chalk.yellow(`'node_modules/' does not exist. Try '${platformName} install ${artifact.type} ${artifact.name}'.`));
       return;
     }
 

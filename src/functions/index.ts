@@ -14,6 +14,7 @@ export * from './gitPush';
 export * from './gitRemove';
 export * from './gitReset';
 export * from './gitStatus';
+export * from './isRunning';
 export * from './killPid';
 export * from './loadConfig';
 export * from './loadPlatformConfig';

@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as forEach from 'p-map';
 import { IAction } from '@marvelousjs/program';
 
-import { loadConfig, saveConfig, toArtifactArray, parseType, formatPath, parseEnvVar } from '../functions';
+import { loadConfig, saveConfig, toArtifactArray, parseType, formatPath, parseEnvVar, isRunning } from '../functions';
 
 interface IProps {
   cliConfig: any;
@@ -63,7 +63,7 @@ export const EnvAction: IAction<IProps> = async ({
         if (envMapping[name] === 'NODE_ENV') {
           value = 'development';
         } else if (envMapping[name] === `${parseEnvVar(artifact.repo.name)}_URL`) {
-          const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+          const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
           if (currentDaemon) {
             value = `http://localhost:${currentDaemon.port}`;
           }
