@@ -33,13 +33,15 @@ export const ListAction: IAction<IProps> = async ({
   artifacts.forEach((artifact: IArtifact) => {
     const dir = path.normalize(`${homedir()}/Developer/${platformName}/${artifact.repo.name}`);
 
-    let status = chalk.red('off');
+    let status = '   ';
     let url = '';
     if (artifact.type !== 'tool') {
       const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
       if (currentDaemon && isRunning(currentDaemon.pid)) {
         status = chalk.green('on ');
         url = `http://localhost:${currentDaemon.port}`;
+      } else {
+        chalk.red('off');
       }
     }
 
