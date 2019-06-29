@@ -31,29 +31,36 @@ export const StartAction: IAction<IProps> = ({
     name: nameFilter,
     type: parseType(typeFilter).singular
   });
+  const unfilteredArtifacts = toArtifactArray(cliConfig);
 
   const envMapping: any = {};
   const portMapping: any = {};
-  artifacts.forEach(artifact => {
+  unfilteredArtifacts.forEach(artifact => {
     // tools NEVER start
     if (artifact.type === 'tool') {
       return;
     }
     
-    const randomPort = (() => {
-      if (artifact.type === 'app') {
-        return random(8100, 8999);
-      }
-      if (artifact.type === 'gateway') {
-        return random(4100, 4999);
-      }
-      if (artifact.type === 'service') {
-        return random(3100, 3999);
-      }
-    })();
+    let port = 0;
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
+    if (currentDaemon) {
+      port = currentDaemon.port;
+    } else {
+      port = (() => {
+        if (artifact.type === 'app') {
+          return random(8100, 8999);
+        }
+        if (artifact.type === 'gateway') {
+          return random(4100, 4999);
+        }
+        if (artifact.type === 'service') {
+          return random(3100, 3999);
+        }
+      })();
+    }
 
-    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${randomPort}`;
-    portMapping[artifact.repo.name] = randomPort;
+    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${port}`;
+    portMapping[artifact.repo.name] = port;
   });
 
   artifacts.forEach(artifact => {
@@ -96,7 +103,7 @@ export const StartAction: IAction<IProps> = ({
       NODE_ENV: 'development',
       ...envMapping
     };
-      
+
     // create new daemon process
     const child = spawn('npm', ['run', 'start:dev'], {
       cwd: path.join(homedir(), 'Developer', platformName, artifact.repo.name),
