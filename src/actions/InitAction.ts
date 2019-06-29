@@ -26,7 +26,7 @@ export const InitAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
 
   await forEach(artifacts, async artifact => {
-    const from = `https://${artifact.repo.host}${artifact.repo.path}`;
+    const from = `git@${artifact.repo.host}${artifact.repo.path.replace(/^\//, ':')}`;
     const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
     console.log(chalk.bold(`Initializing '${formatPath(to)}'...`));

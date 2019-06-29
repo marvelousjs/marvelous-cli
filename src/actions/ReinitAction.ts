@@ -29,7 +29,7 @@ export const ReinitAction: IAction<IProps> = async ({
 
   setTimeout(async () => {
     await forEach(artifacts, async artifact => {
-      const from = `https://${artifact.repo.host}${artifact.repo.path}`;
+      const from = `git@${artifact.repo.host}${artifact.repo.path.replace(/^\//, ':')}`;
       const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
   
       console.log(chalk.bold(`Re-Initializing '${formatPath(to)}'...`));
