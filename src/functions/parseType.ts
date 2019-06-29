@@ -1,4 +1,4 @@
-export const parseType = (type: string) => {
+export const parseType = (type = 'all') => {
   if (type === 'all') {
     return {
       singular: 'all',

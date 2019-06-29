@@ -87,7 +87,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -107,7 +107,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -127,7 +127,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -167,7 +167,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -187,7 +187,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -207,7 +207,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -227,7 +227,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -247,7 +247,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -267,7 +267,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -287,7 +287,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -307,7 +307,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -327,7 +327,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'gateway', 'service'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -347,7 +347,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -367,7 +367,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -387,7 +387,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -407,7 +407,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -426,7 +426,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           }
         ]
       },
@@ -442,7 +442,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -482,7 +482,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -502,7 +502,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -522,7 +522,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -542,7 +542,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -562,7 +562,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -582,7 +582,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -602,7 +602,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -622,7 +622,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -642,7 +642,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -662,7 +662,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -682,7 +682,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -702,7 +702,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
@@ -722,7 +722,7 @@ export const MvsProgram: IProgram = ({ args }) => {
           {
             name: 'type',
             enum: ['all', 'app', 'gateway', 'service', 'tool'],
-            required: true
+            required: false
           },
           {
             name: 'name',
