@@ -3,7 +3,7 @@ export const killPid = async (pid: number) => {
     console.log(`Killing pid ${pid}...`);
     const timer = setInterval(() => {
       try {
-        process.kill(pid);
+        process.kill(-pid);
       } catch (error) {
         if (error.code !== 'ESRCH') {
           return;
