@@ -43,7 +43,9 @@ export const StartAction: IAction<IProps> = async ({
     
     let port = 0;
     const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
-    if (currentDaemon) {
+    if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
+      port = Number(process.env[`${parseEnvVar(artifact.repo.name)}_URL`].split(':').slice(-1)[0]);
+    } else if (currentDaemon) {
       port = currentDaemon.port;
     } else {
       port = (() => {
