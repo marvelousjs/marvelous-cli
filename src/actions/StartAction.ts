@@ -138,7 +138,7 @@ export const StartAction: IAction<IProps> = async ({
     } finally {
       child.unref();
     }
-  });
 
-  saveConfig(config);
+    saveConfig(config);
+  });
 };
