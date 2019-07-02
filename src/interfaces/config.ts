@@ -7,12 +7,12 @@ export interface IConfig {
 }
 
 export interface IConfigDaemon {
-  env: {
+  env?: {
     [name: string]: string;
   };
-  name: string;
-  pid: number;
-  port: number;
+  name?: string;
+  pid?: number;
+  port?: number;
 }
 
 export interface IConfigPlatform {

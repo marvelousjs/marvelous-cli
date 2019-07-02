@@ -31,16 +31,18 @@ export const StopAction: IAction<IProps> = async ({
 
   await forEach(artifacts, async (artifact) => {
     const currentDaemonIndex = config.daemons.findIndex(d => d.name === artifact.repo.name);
+
     if (currentDaemonIndex !== -1) {
       console.log(chalk.bold(`Stopping ${artifact.name} ${artifact.type}...`));
 
-      const pid = config.daemons[currentDaemonIndex].pid;
+      const currentDaemon = config.daemons[currentDaemonIndex];
 
-      await killPid(pid);
+      await killPid(currentDaemon.pid);
 
-      config.daemons.splice(currentDaemonIndex, 1);
+      config.daemons[currentDaemonIndex].pid = -1;
 
       saveConfig(config);
     }
+
   }, { concurrency: 1 });
 };

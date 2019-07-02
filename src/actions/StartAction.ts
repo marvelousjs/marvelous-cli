@@ -42,7 +42,7 @@ export const StartAction: IAction<IProps> = async ({
     }
     
     let port = 0;
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
+    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
     if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
       port = Number(process.env[`${parseEnvVar(artifact.repo.name)}_URL`].split(':').slice(-1)[0]);
     } else if (currentDaemon) {
@@ -98,8 +98,10 @@ export const StartAction: IAction<IProps> = async ({
       fs.mkdirSync(logDir, { recursive: true });
     }
 
-    const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name && isRunning(d.pid));
-    if (currentDaemon) {
+    const currentDaemonIndex = config.daemons.findIndex(d => d.name === artifact.repo.name);
+    const currentDaemon = currentDaemonIndex > -1 ? config.daemons[currentDaemonIndex] : {};
+
+    if (currentDaemonIndex !== -1 && isRunning(currentDaemon.pid)) {
       console.log(
         chalk.yellow(
           `${artifact.repo.name} has already been started on port ${currentDaemon.port} (pid: ${
@@ -125,16 +127,21 @@ export const StartAction: IAction<IProps> = async ({
     });
 
     try {
-      if (config.daemons.find(d => d.port === portMapping[artifact.repo.name])) {
+      if (config.daemons.find(d => d.port === portMapping[artifact.repo.name] && artifact.repo.name !== d.name)) {
         throw new Error(`Failed to generate random port. Please try again.`);
       }
 
-      config.daemons.push({
-        name: artifact.repo.name,
-        pid: child.pid,
-        port: portMapping[artifact.repo.name],
-        env
-      });
+      if (currentDaemonIndex !== -1) {
+        config.daemons[currentDaemonIndex].env = env;
+        config.daemons[currentDaemonIndex].pid = child.pid;
+      } else {
+        config.daemons.push({
+          name: artifact.repo.name,
+          pid: child.pid,
+          port: portMapping[artifact.repo.name],
+          env
+        });
+      }
     } finally {
       child.unref();
     }

@@ -1,4 +1,7 @@
 export const killPid = async (pid: number) => {
+  if (!pid || pid === -1) {
+    return;
+  }
   return new Promise(resolve => {
     console.log(`Killing pid ${pid}...`);
     const timer = setInterval(() => {

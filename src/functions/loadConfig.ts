@@ -22,5 +22,9 @@ export const loadConfig = () => {
     throw new Error(`Config file is corrupt, should be object: ${configFile}`);
   }
 
+  if (!config.daemons) {
+    config.daemons = [];
+  }
+
   return config;
 };
