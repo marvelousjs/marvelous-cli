@@ -119,7 +119,10 @@ export const StartAction: IAction<IProps> = async ({
     };
 
     // create new daemon process
-    const child = spawn('npm', ['run', 'start:dev'], {
+    const cwd = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    const pkg = require(path.join(cwd, 'package.json'));
+    const startScript = pkg.scripts && pkg.scripts['start:dev'] ? 'start:dev' : 'start';
+    const child = spawn('npm', ['run', startScript], {
       cwd: path.join(homedir(), 'Developer', platformName, artifact.repo.name),
       detached: true,
       env,

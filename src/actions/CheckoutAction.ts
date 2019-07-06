@@ -20,6 +20,8 @@ export const CheckoutAction: IAction<IProps> = async ({
   typeFilter,
   nameFilter
 }) => {
+  const branch = process.env.BRANCH || 'master';
+
   // load config
   const config = loadConfig();
 
@@ -28,14 +30,14 @@ export const CheckoutAction: IAction<IProps> = async ({
   await forEach(artifacts, async artifact => {
     const checkoutDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
-    console.log(chalk.bold(`Checking out 'master' in '${formatPath(checkoutDir)}'...`));
+    console.log(chalk.bold(`Checking out '${branch}' in '${formatPath(checkoutDir)}'...`));
 
     if (!fs.existsSync(checkoutDir)) {
       console.log(chalk.yellow(`Directory does not exist. Try '${platformName} clone ${artifact.type} ${artifact.name}'.`));
       return;
     }
 
-    await gitCheckout(checkoutDir);
+    await gitCheckout(checkoutDir, branch);
   }, { concurrency: 1 });
 
   saveConfig(config);

@@ -34,20 +34,29 @@ export const BuildAction: IAction<IProps> = async ({
       return;
     }
     
-    const randomPort = (() => {
-      if (artifact.type === 'app') {
-        return random(8100, 8999);
-      }
-      if (artifact.type === 'gateway') {
-        return random(4100, 4999);
-      }
-      if (artifact.type === 'service') {
-        return random(3100, 3999);
-      }
-    })();
+    let port = 0;
+    if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
+      port = Number(process.env[`${parseEnvVar(artifact.repo.name)}_URL`].split(':').slice(-1)[0]);
+    } else {
+      port = (() => {
+        if (artifact.type === 'app') {
+          return random(8100, 8999);
+        }
+        if (artifact.type === 'gateway') {
+          return random(4100, 4999);
+        }
+        if (artifact.type === 'service') {
+          return random(3100, 3999);
+        }
+      })();
+    }
 
-    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${randomPort}`;
-    portMapping[artifact.repo.name] = randomPort;
+    if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
+      envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = process.env[`${parseEnvVar(artifact.repo.name)}_URL`];
+    } else {
+      envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${port}`;
+    }
+    portMapping[artifact.repo.name] = port;
   });
 
   await forEach(artifacts, async artifact => {
