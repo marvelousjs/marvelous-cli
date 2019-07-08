@@ -27,25 +27,28 @@ export const ReinitAction: IAction<IProps> = async ({
 
   console.log(chalk.yellow(`WARNING: Any changes to these repos will be lost. Press CTRL+C to cancel. Proceeding in 10 seconds...`))
 
-  setTimeout(async () => {
-    await forEach(artifacts, async artifact => {
-      const from = `git@${artifact.repo.host}${artifact.repo.path.replace(/^\//, ':')}`;
-      const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
-  
-      console.log(chalk.bold(`Re-Initializing '${formatPath(to)}'...`));
-  
-      if (!fs.existsSync(to)) {
-        await gitClone(to, from);
-      } else {
-        await gitReset(to);
-        await gitPull(to);
-      }
-      await npmInstall(to);
-      await npmBuild(to);
-      await npmLink(to);
-  
-    }, { concurrency: 1 });
-  }, 10 * 1000);
+  await new Promise((resolve) => {
+    setTimeout(async () => {
+      await forEach(artifacts, async artifact => {
+        const from = `git@${artifact.repo.host}${artifact.repo.path.replace(/^\//, ':')}`;
+        const to = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
+    
+        console.log(chalk.bold(`Re-Initializing '${formatPath(to)}'...`));
+    
+        if (!fs.existsSync(to)) {
+          await gitClone(to, from);
+        } else {
+          await gitReset(to);
+          await gitPull(to);
+        }
+        await npmInstall(to);
+        await npmBuild(to);
+        await npmLink(to);
+      }, { concurrency: 1 });
+
+      resolve();
+    }, 10 * 1000);
+  });
 
   saveConfig(config);
 };
