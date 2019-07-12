@@ -113,8 +113,8 @@ export const StartAction: IAction<IProps> = async ({
     }
 
     const env = {
-      ...process.env,
       NODE_ENV: 'development',
+      ...process.env,
       ...envMapping
     };
 

@@ -9,8 +9,8 @@ export const npmTest = (cwd: string, envMapping = {}) => {
     const child = spawn('npm', ['run', testScript], {
       cwd,
       env: {
-        ...process.env,
         NODE_ENV: 'test',
+        ...process.env,
         ...envMapping
       },
       stdio: ['ignore', process.stdout, process.stdout]
