@@ -26,10 +26,6 @@ export const GenerateAction: IAction<IProps> = async ({
   const artifacts = toArtifactArray(cliConfig, { name: nameFilter, type: parseType(typeFilter).singular }, { reverse: true });
 
   await forEach(artifacts, async artifact => {
-    if (artifact.type === 'app' || artifact.type === 'tool') {
-      return;
-    }
-
     const generateDir = path.join(homedir(), 'Developer', platformName, artifact.repo.name);
 
     console.log(chalk.bold(`Generating '${formatPath(generateDir)}'...`));
