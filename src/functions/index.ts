@@ -7,6 +7,7 @@ export * from './gitBranch';
 export * from './gitCheckout';
 export * from './gitClone';
 export * from './gitCommit';
+export * from './gitDeploy';
 export * from './gitDiff';
 export * from './gitLog';
 export * from './gitPull';

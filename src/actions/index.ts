@@ -9,6 +9,7 @@ export * from './CodeAction';
 export * from './CommitAction';
 export * from './CurlAction';
 export * from './DependenciesAction';
+export * from './DeployAction';
 export * from './DiffAction';
 export * from './DirAction';
 export * from './EnvAction';

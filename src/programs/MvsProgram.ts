@@ -13,6 +13,7 @@ import {
   CommitAction,
   CurlAction,
   DependenciesAction,
+  DeployAction,
   DiffAction,
   DirAction,
   EnvAction,
@@ -279,6 +280,26 @@ export const MvsProgram: IProgram = ({ args }) => {
       dependencies: {
         description: 'view dependencies for package',
         action: () => DependenciesAction({
+          cliConfig,
+          platformName,
+          typeFilter: args[0],
+          nameFilter: args[1]
+        }),
+        args: [
+          {
+            name: 'type',
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
+            required: false
+          },
+          {
+            name: 'name',
+            required: false
+          }
+        ]
+      },
+      deploy: {
+        description: 'Deploy to staging or production',
+        action: () => DeployAction({
           cliConfig,
           platformName,
           typeFilter: args[0],
