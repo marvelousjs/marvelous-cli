@@ -357,7 +357,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         ]
       },
       generate: {
-        description: 'generate types and client code',
+        description: 'generate code, types and client code',
         action: () => GenerateAction({
           cliConfig,
           platformName,
@@ -367,7 +367,7 @@ export const MvsProgram: IProgram = ({ args }) => {
         args: [
           {
             name: 'type',
-            enum: ['all', 'gateway', 'service'],
+            enum: ['all', 'app', 'gateway', 'service', 'tool'],
             required: false
           },
           {
