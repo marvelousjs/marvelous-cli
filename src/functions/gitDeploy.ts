@@ -8,7 +8,7 @@ export const gitDeploy = (cwd: string) => {
       throw new Error('BRANCH must be one of the following: staging, production');
     }
     exec(
-      `git checkout -b ${branch} ; git checkout ${branch} ; git merge master ; git push origin ${branch} ; git checkout master`,
+      `git checkout master ; git push origin --delete ${branch} ; git checkout -b ${branch} ; git checkout ${branch} ; git merge master ; git push origin ${branch} ; git checkout master`,
       { cwd },
       (result, res) => {
         console.log(res);
