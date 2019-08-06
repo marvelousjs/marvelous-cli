@@ -45,6 +45,13 @@ export const StartAction: IAction<IProps> = async ({
     const currentDaemon = config.daemons.find(d => d.name === artifact.repo.name);
     if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
       port = Number(process.env[`${parseEnvVar(artifact.repo.name)}_URL`].split(':').slice(-1)[0]);
+      if (isNaN(port)) {
+        if (/^https:/i.test(process.env[`${parseEnvVar(artifact.repo.name)}_URL`])) {
+          port = 443;
+        } else {
+          port = 80;
+        }
+      }
     } else if (currentDaemon) {
       port = currentDaemon.port;
     } else {
@@ -61,7 +68,11 @@ export const StartAction: IAction<IProps> = async ({
       })();
     }
 
-    envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${port}`;
+    if (process.env[`${parseEnvVar(artifact.repo.name)}_URL`]) {
+      envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = process.env[`${parseEnvVar(artifact.repo.name)}_URL`];
+    } else {
+      envMapping[`${parseEnvVar(artifact.repo.name)}_URL`] = `http://localhost:${port}`;
+    }
     portMapping[artifact.repo.name] = port;
   });
 
