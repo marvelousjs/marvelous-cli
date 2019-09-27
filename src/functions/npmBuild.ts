@@ -6,7 +6,6 @@ export const npmBuild = (cwd: string, envMapping = {}) => {
     // create new daemon process
     const pkg = require(path.join(cwd, 'package.json'));
     const buildScript = pkg.scripts && pkg.scripts['build:dev'] ? 'build:dev' : 'build';
-    console.log(envMapping);
     const child = spawn('npm', ['run', buildScript], {
       cwd,
       env: {
